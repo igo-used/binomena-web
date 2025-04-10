@@ -7,8 +7,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { AlertCircle, ArrowLeft, ExternalLink } from "lucide-react"
-import { getBlockByIndex } from "@/lib/api"
+import { getBlockByID } from "@/lib/api" // Updated function name
 import type { Block, Transaction } from "@/lib/api"
+import { ApiDebug } from "@/components/api-debug"
 
 export default function BlockDetailPage({ params }: { params: { id: string } }) {
   const [block, setBlock] = useState<Block | null>(null)
@@ -24,14 +25,15 @@ export default function BlockDetailPage({ params }: { params: { id: string } }) 
     setError(null)
 
     try {
-      const blockIndex = Number.parseInt(params.id)
-      if (isNaN(blockIndex)) {
-        throw new Error("Invalid block index")
-      }
+      console.log(`Fetching block with ID: ${params.id}`)
 
-      const blockData = await getBlockByIndex(blockIndex)
+      // Use the updated function name
+      const blockData = await getBlockByID(params.id)
+      console.log("Block data received:", blockData)
+
       setBlock(blockData)
     } catch (err) {
+      console.error("Error fetching block:", err)
       setError(err instanceof Error ? err.message : "Failed to fetch block data")
     } finally {
       setLoading(false)
@@ -98,13 +100,13 @@ export default function BlockDetailPage({ params }: { params: { id: string } }) 
                 </div>
                 <div className="space-y-2">
                   <p className="text-sm font-medium text-muted-foreground">Transactions</p>
-                  <p>{block.data.length}</p>
+                  <p>{block.data?.length || 0}</p>
                 </div>
               </div>
             </CardContent>
           </Card>
 
-          {block.data.length > 0 ? (
+          {block.data && block.data.length > 0 ? (
             <Card>
               <CardHeader>
                 <CardTitle>Transactions</CardTitle>
@@ -158,6 +160,9 @@ export default function BlockDetailPage({ params }: { params: { id: string } }) 
           )}
         </div>
       ) : null}
+
+      {/* Add the API Debug component */}
+      <ApiDebug />
     </div>
   )
 }

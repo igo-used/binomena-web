@@ -40,43 +40,59 @@ export interface WalletBalance {
 
 // Create a new wallet
 export async function createWallet(): Promise<Wallet> {
-  const response = await fetch(`${API_BASE_URL}/wallet`, {
-    method: "POST",
-  })
+  try {
+    console.log("Creating wallet, API URL:", API_BASE_URL)
+    const response = await fetch(`${API_BASE_URL}/wallet`, {
+      method: "POST",
+    })
 
-  if (!response.ok) {
-    throw new Error(`Failed to create wallet: ${response.statusText}`)
+    if (!response.ok) {
+      throw new Error(`Failed to create wallet: ${response.statusText}`)
+    }
+
+    return await response.json()
+  } catch (error) {
+    console.error("Error creating wallet:", error)
+    throw error
   }
-
-  return response.json()
 }
 
 // Import a wallet using a private key
 export async function importWallet(privateKey: string): Promise<Wallet> {
-  const response = await fetch(`${API_BASE_URL}/wallet/import`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ privateKey }),
-  })
+  try {
+    const response = await fetch(`${API_BASE_URL}/wallet/import`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ privateKey }),
+    })
 
-  if (!response.ok) {
-    throw new Error(`Failed to import wallet: ${response.statusText}`)
+    if (!response.ok) {
+      throw new Error(`Failed to import wallet: ${response.statusText}`)
+    }
+
+    return await response.json()
+  } catch (error) {
+    console.error("Error importing wallet:", error)
+    throw error
   }
-
-  return response.json()
 }
 
 // Get wallet balance
 export async function getWalletBalance(address: string): Promise<WalletBalance> {
-  const response = await fetch(`${API_BASE_URL}/balance/${address}`)
+  try {
+    const response = await fetch(`${API_BASE_URL}/balance/${address}`)
 
-  if (!response.ok) {
-    throw new Error(`Failed to get balance: ${response.statusText}`)
+    if (!response.ok) {
+      throw new Error(`Failed to get balance: ${response.statusText}`)
+    }
+
+    return await response.json()
+  } catch (error) {
+    console.error("Error getting wallet balance:", error)
+    throw error
   }
-
-  return response.json()
 }
 
 // Send a transaction
@@ -86,58 +102,79 @@ export async function sendTransaction(
   amount: number,
   privateKey: string,
 ): Promise<{ status: string; txId: string; node: string }> {
-  const response = await fetch(`${API_BASE_URL}/transaction`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      from,
-      to,
-      amount,
-      privateKey,
-    }),
-  })
+  try {
+    const response = await fetch(`${API_BASE_URL}/transaction`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        from,
+        to,
+        amount,
+        privateKey,
+      }),
+    })
 
-  if (!response.ok) {
-    const errorData = await response.json()
-    throw new Error(errorData.error || `Failed to send transaction: ${response.statusText}`)
+    if (!response.ok) {
+      const errorData = await response.json()
+      throw new Error(errorData.error || `Failed to send transaction: ${response.statusText}`)
+    }
+
+    return await response.json()
+  } catch (error) {
+    console.error("Error sending transaction:", error)
+    throw error
   }
-
-  return response.json()
 }
 
 // Get blockchain status
 export async function getBlockchainStatus(): Promise<BlockchainStatus> {
-  const response = await fetch(`${API_BASE_URL}/status`)
+  try {
+    const response = await fetch(`${API_BASE_URL}/status`)
 
-  if (!response.ok) {
-    throw new Error(`Failed to get blockchain status: ${response.statusText}`)
+    if (!response.ok) {
+      throw new Error(`Failed to get blockchain status: ${response.statusText}`)
+    }
+
+    return await response.json()
+  } catch (error) {
+    console.error("Error getting blockchain status:", error)
+    throw error
   }
-
-  return response.json()
 }
 
 // Get all blocks
-export async function getAllBlocks(): Promise<{ blocks: Block[]; count: number }> {
-  const response = await fetch(`${API_BASE_URL}/blocks`)
+export async function getBlocks(): Promise<{ blocks: Block[]; count: number }> {
+  try {
+    const response = await fetch(`${API_BASE_URL}/blocks`)
 
-  if (!response.ok) {
-    throw new Error(`Failed to get blocks: ${response.statusText}`)
+    if (!response.ok) {
+      throw new Error(`Failed to get blocks: ${response.statusText}`)
+    }
+
+    return await response.json()
+  } catch (error) {
+    console.error("Error getting blocks:", error)
+    throw error
   }
-
-  return response.json()
 }
 
 // Get block by index
-export async function getBlockByIndex(index: number): Promise<Block> {
-  const response = await fetch(`${API_BASE_URL}/blocks/${index}`)
+export async function getBlockByID(id: string): Promise<Block> {
+  try {
+    const index = Number.parseInt(id)
+    const response = await fetch(`${API_BASE_URL}/blocks/${index}`)
 
-  if (!response.ok) {
-    throw new Error(`Failed to get block: ${response.statusText}`)
+    if (!response.ok) {
+      throw new Error(`Failed to get block: ${response.statusText}`)
+    }
+
+    return await response.json()
+  } catch (error) {
+    console.error("Error getting block by ID:", error)
+    throw error
   }
-
-  return response.json()
 }
 
 // Request tokens from faucet (admin only)
@@ -146,56 +183,27 @@ export async function requestTokensFromFaucet(
   amount: number,
   adminKey: string,
 ): Promise<{ status: string; message: string; balance: number }> {
-  const response = await fetch(`${API_BASE_URL}/faucet`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      address,
-      amount,
-      adminKey,
-    }),
-  })
+  try {
+    const response = await fetch(`${API_BASE_URL}/faucet`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        address,
+        amount,
+        adminKey,
+      }),
+    })
 
-  if (!response.ok) {
-    const errorData = await response.json()
-    throw new Error(errorData.error || `Failed to request tokens: ${response.statusText}`)
+    if (!response.ok) {
+      const errorData = await response.json()
+      throw new Error(errorData.error || `Failed to request tokens: ${response.statusText}`)
+    }
+
+    return await response.json()
+  } catch (error) {
+    console.error("Error requesting tokens from faucet:", error)
+    throw error
   }
-
-  return response.json()
-}
-
-// Distribute initial tokens (admin only)
-export async function distributeInitialTokens(
-  adminKey: string,
-  founderAddress: string,
-  treasuryAddress: string,
-  communityAddress: string,
-  founderPercent: number,
-  treasuryPercent: number,
-  communityPercent: number,
-): Promise<any> {
-  const response = await fetch(`${API_BASE_URL}/admin/distribute-initial-tokens`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      adminKey,
-      founderAddress,
-      treasuryAddress,
-      communityAddress,
-      founderPercent,
-      treasuryPercent,
-      communityPercent,
-    }),
-  })
-
-  if (!response.ok) {
-    const errorData = await response.json()
-    throw new Error(errorData.error || `Failed to distribute tokens: ${response.statusText}`)
-  }
-
-  return response.json()
 }

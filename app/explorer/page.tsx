@@ -8,8 +8,9 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Input } from "@/components/ui/input"
 import { AlertCircle, Search, ArrowRight } from "lucide-react"
-import { getBlockchainStatus, getAllBlocks } from "@/lib/api"
+import { getBlockchainStatus, getBlocks } from "@/lib/api" // Updated function name
 import type { Block } from "@/lib/api"
+import { ApiDebug } from "@/components/api-debug"
 
 export default function ExplorerPage() {
   const [status, setStatus] = useState<any>(null)
@@ -27,11 +28,32 @@ export default function ExplorerPage() {
     setError(null)
 
     try {
-      const [statusData, blocksData] = await Promise.all([getBlockchainStatus(), getAllBlocks()])
+      // Log the API calls for debugging
+      console.log("Fetching blockchain status and blocks...")
 
-      setStatus(statusData)
-      setBlocks(blocksData.blocks.slice(0, 10)) // Show only the latest 10 blocks
+      // Use Promise.allSettled to get partial data even if one request fails
+      const results = await Promise.allSettled([
+        getBlockchainStatus(),
+        getBlocks(), // Updated function name
+      ])
+
+      // Handle status result
+      if (results[0].status === "fulfilled") {
+        setStatus(results[0].value)
+      } else {
+        console.error("Error fetching status:", results[0].reason)
+      }
+
+      // Handle blocks result
+      if (results[1].status === "fulfilled") {
+        const blocksData = results[1].value
+        setBlocks(blocksData.blocks?.slice(0, 10) || []) // Show only the latest 10 blocks
+      } else {
+        console.error("Error fetching blocks:", results[1].reason)
+        setError("Failed to fetch blocks data")
+      }
     } catch (err) {
+      console.error("Error in fetchData:", err)
       setError(err instanceof Error ? err.message : "Failed to fetch blockchain data")
     } finally {
       setLoading(false)
@@ -100,7 +122,7 @@ export default function ExplorerPage() {
                     <CardTitle className="text-sm font-medium">Token Supply</CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <div className="text-2xl font-bold">{status.tokenSupply.toLocaleString()} BNM</div>
+                    <div className="text-2xl font-bold">{status.tokenSupply?.toLocaleString() || 0} BNM</div>
                   </CardContent>
                 </Card>
                 <Card>
@@ -136,22 +158,30 @@ export default function ExplorerPage() {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {blocks.map((block) => (
-                      <TableRow key={block.index}>
-                        <TableCell className="font-medium">{block.index}</TableCell>
-                        <TableCell>{formatTimestamp(block.timestamp)}</TableCell>
-                        <TableCell>{block.data.length}</TableCell>
-                        <TableCell className="truncate max-w-[150px]">{block.validator}</TableCell>
-                        <TableCell className="text-right">
-                          <Button asChild variant="ghost" size="sm">
-                            <Link href={`/explorer/block/${block.index}`}>
-                              View Details
-                              <ArrowRight className="ml-2 h-4 w-4" />
-                            </Link>
-                          </Button>
+                    {blocks.length > 0 ? (
+                      blocks.map((block) => (
+                        <TableRow key={block.index}>
+                          <TableCell className="font-medium">{block.index}</TableCell>
+                          <TableCell>{formatTimestamp(block.timestamp)}</TableCell>
+                          <TableCell>{block.data?.length || 0}</TableCell>
+                          <TableCell className="truncate max-w-[150px]">{block.validator}</TableCell>
+                          <TableCell className="text-right">
+                            <Button asChild variant="ghost" size="sm">
+                              <Link href={`/explorer/block/${block.index}`}>
+                                View Details
+                                <ArrowRight className="ml-2 h-4 w-4" />
+                              </Link>
+                            </Button>
+                          </TableCell>
+                        </TableRow>
+                      ))
+                    ) : (
+                      <TableRow>
+                        <TableCell colSpan={5} className="text-center py-4">
+                          No blocks found
                         </TableCell>
                       </TableRow>
-                    ))}
+                    )}
                   </TableBody>
                 </Table>
               </CardContent>
@@ -164,6 +194,9 @@ export default function ExplorerPage() {
           </>
         )}
       </div>
+
+      {/* Add the API Debug component */}
+      <ApiDebug />
     </div>
   )
 }

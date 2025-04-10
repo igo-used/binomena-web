@@ -2,6 +2,7 @@ import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Wallet, BarChart3, Code, CreditCard, Shield } from "lucide-react"
+import { ApiDebug } from "@/components/api-debug"
 
 export default function Home() {
   return (
@@ -90,7 +91,9 @@ export default function Home() {
           </div>
         </div>
       </section>
-
+      <div className="container mx-auto py-8">
+        <ApiDebug />
+      </div>
       {/* CTA Section */}
       <section className="w-full py-12 md:py-24 lg:py-32 bg-muted">
         <div className="container px-4 md:px-6">
