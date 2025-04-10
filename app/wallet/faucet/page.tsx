@@ -113,7 +113,7 @@ export default function FaucetPage() {
             )}
 
             {success && (
-              <Alert variant="success" className="bg-green-50 border-green-500 text-green-700">
+              <Alert variant="default" className="bg-green-50 border border-green-500 text-green-700">
                 <AlertTitle>Success</AlertTitle>
                 <AlertDescription>{success}</AlertDescription>
               </Alert>
