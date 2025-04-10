@@ -11,8 +11,14 @@ export default function Home() {
         </p>
         <div className="flex flex-wrap gap-4 justify-center">
           <a
-            href="/wallet/create"
+            href="/wallet"
             className="bg-white text-blue-600 hover:bg-blue-100 transition-colors px-6 py-3 rounded-md font-medium"
+          >
+            Wallet Dashboard
+          </a>
+          <a
+            href="/wallet/create"
+            className="bg-transparent border border-white hover:bg-white/10 transition-colors px-6 py-3 rounded-md font-medium"
           >
             Create Wallet
           </a>
