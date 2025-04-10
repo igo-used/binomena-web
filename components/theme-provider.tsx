@@ -10,5 +10,9 @@ export function ThemeProvider({
   children: ReactNode
   [key: string]: any
 }) {
-  return <NextThemesProvider {...props}>{children}</NextThemesProvider>
+  return (
+    <NextThemesProvider attribute="class" defaultTheme="dark" enableSystem={false} forcedTheme="dark" {...props}>
+      {children}
+    </NextThemesProvider>
+  )
 }
