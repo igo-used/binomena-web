@@ -92,7 +92,8 @@ export default function WalletPage() {
           </CardFooter>
         </Card>
 
-        <Card className="card-hover">
+        {/* Commented out the Request Tokens card */}
+        {/* <Card className="card-hover">
           <CardHeader>
             <CardTitle>Request Tokens</CardTitle>
             <CardDescription>Request tokens from the faucet (admin only)</CardDescription>
@@ -107,7 +108,7 @@ export default function WalletPage() {
               <Link href="/wallet/faucet">Request Tokens</Link>
             </Button>
           </CardFooter>
-        </Card>
+        </Card> */}
       </div>
     </div>
   )

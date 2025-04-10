@@ -28,7 +28,7 @@ const Header = () => {
       <div className="container flex h-16 items-center justify-between">
         <div className="flex items-center gap-2">
           <Link href="/" className="flex items-center space-x-2">
-            <span className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-blue-800 text-transparent bg-clip-text">
+            <span className="text-2xl font-bold bg-gradient-to-r from-[#d1ff00] to-green-500 text-transparent bg-clip-text">
               Binomena
             </span>
           </Link>
@@ -40,8 +40,8 @@ const Header = () => {
             <Link
               key={item.name}
               href={item.href}
-              className={`text-sm font-medium transition-colors hover:text-primary ${
-                pathname === item.href ? "text-primary" : "text-muted-foreground"
+              className={`text-sm font-medium transition-colors hover:text-[#d1ff00] ${
+                pathname === item.href ? "text-[#d1ff00]" : "text-muted-foreground"
               }`}
             >
               {item.name}
@@ -51,13 +51,13 @@ const Header = () => {
 
         <div className="flex items-center gap-2">
           <ModeToggle />
-          <Button asChild className="hidden md:inline-flex">
+          <Button asChild className="hidden md:inline-flex bg-[#d1ff00] text-black hover:bg-lime-300">
             <Link href="/wallet/create">Create Wallet</Link>
           </Button>
 
           {/* Mobile Menu Button */}
           <Button variant="ghost" size="icon" className="md:hidden" onClick={toggleMenu} aria-label="Toggle Menu">
-            {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+            {isMenuOpen ? <X className="h-6 w-6 text-[#d1ff00]" /> : <Menu className="h-6 w-6 text-[#d1ff00]" />}
           </Button>
         </div>
       </div>
@@ -70,15 +70,15 @@ const Header = () => {
               <Link
                 key={item.name}
                 href={item.href}
-                className={`block text-sm font-medium transition-colors hover:text-primary ${
-                  pathname === item.href ? "text-primary" : "text-muted-foreground"
+                className={`block text-sm font-medium transition-colors hover:text-[#d1ff00] ${
+                  pathname === item.href ? "text-[#d1ff00]" : "text-muted-foreground"
                 }`}
                 onClick={() => setIsMenuOpen(false)}
               >
                 {item.name}
               </Link>
             ))}
-            <Button asChild className="w-full mt-4">
+            <Button asChild className="w-full mt-4 bg-[#d1ff00] text-black hover:bg-lime-300">
               <Link href="/wallet/create" onClick={() => setIsMenuOpen(false)}>
                 Create Wallet
               </Link>

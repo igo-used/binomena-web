@@ -64,7 +64,7 @@ const Footer = () => {
             <ul className="space-y-2">
               <li>
                 <a
-                  href="https://github.com/binomena"
+                  href="https://github.com/igo-used/binomena"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-sm text-muted-foreground hover:text-primary"
@@ -74,22 +74,22 @@ const Footer = () => {
               </li>
               <li>
                 <a
-                  href="https://twitter.com/binomena"
+                  href="https://t.me/binomchain"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-sm text-muted-foreground hover:text-primary"
                 >
-                  Twitter
+                  Telegram
                 </a>
               </li>
               <li>
                 <a
-                  href="https://discord.gg/binomena"
+                  href="https://www.instagram.com/juxhino_kapllanaj/"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-sm text-muted-foreground hover:text-primary"
                 >
-                  Discord
+                  Instagram
                 </a>
               </li>
             </ul>
@@ -98,7 +98,7 @@ const Footer = () => {
 
         <div className="mt-8 pt-8 border-t text-center">
           <p className="text-sm text-muted-foreground">
-            &copy; {new Date().getFullYear()} Binomena Blockchain. All rights reserved.
+            &copy; {new Date().getFullYear()} Binomena Blockchain. All rights reserved. Powered by ADA Neural.
           </p>
         </div>
       </div>

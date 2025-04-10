@@ -9,24 +9,20 @@ export function ApiDebug() {
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
-    // Get the API URL from environment variable
     const url = process.env.NEXT_PUBLIC_BLOCKCHAIN_API_URL || "Not set"
     setApiUrl(url)
 
-    // Check if API is reachable
     const checkApi = async () => {
       try {
         if (url === "Not set") {
           setApiStatus("API URL not configured")
-          setError("NEXT_PUBLIC_BLOCKCHAIN_API_URL environment variable is not set")
+          setError("Environment variable is not set")
           return
         }
 
-        // Try to fetch from the API
         const response = await fetch(`${url}/status`, {
           method: "GET",
           headers: { "Content-Type": "application/json" },
-          // Add a short timeout
           signal: AbortSignal.timeout(5000),
         }).catch((e) => {
           throw new Error(`Network error: ${e.message}`)
@@ -56,11 +52,10 @@ export function ApiDebug() {
       <CardContent>
         <div className="space-y-2">
           <div>
-            <span className="font-semibold">API URL:</span> {apiUrl}
-          </div>
-          <div>
             <span className="font-semibold">Status:</span>{" "}
-            <span className={`${apiStatus === "Connected" ? "text-green-500" : "text-red-500"}`}>{apiStatus}</span>
+            <span className={`${apiStatus === "Connected" ? "text-green-500" : "text-red-500"}`}>
+              {apiStatus}
+            </span>
           </div>
           {error && (
             <div className="text-red-500 mt-2">

@@ -178,32 +178,32 @@ export async function getBlockByID(id: string): Promise<Block> {
 }
 
 // Request tokens from faucet (admin only)
-export async function requestTokensFromFaucet(
-  address: string,
-  amount: number,
-  adminKey: string,
-): Promise<{ status: string; message: string; balance: number }> {
-  try {
-    const response = await fetch(`${API_BASE_URL}/faucet`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        address,
-        amount,
-        adminKey,
-      }),
-    })
+// export async function requestTokensFromFaucet(
+//   address: string,
+//   amount: number,
+//   adminKey: string,
+// ): Promise<{ status: string; message: string; balance: number }> {
+//   try {
+//     const response = await fetch(`${API_BASE_URL}/faucet`, {
+//       method: "POST",
+//       headers: {
+//         "Content-Type": "application/json",
+//       },
+//       body: JSON.stringify({
+//         address,
+//         amount,
+//         adminKey,
+//       }),
+//     })
 
-    if (!response.ok) {
-      const errorData = await response.json()
-      throw new Error(errorData.error || `Failed to request tokens: ${response.statusText}`)
-    }
+//     if (!response.ok) {
+//       const errorData = await response.json()
+//       throw new Error(errorData.error || `Failed to request tokens: ${response.statusText}`)
+//     }
 
-    return await response.json()
-  } catch (error) {
-    console.error("Error requesting tokens from faucet:", error)
-    throw error
-  }
-}
+//     return await response.json()
+//   } catch (error) {
+//     console.error("Error requesting tokens from faucet:", error)
+//     throw error
+//   }
+// }
