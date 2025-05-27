@@ -3,8 +3,14 @@
 import { useState } from "react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 import { ModeToggle } from "./mode-toggle"
-import { Menu, X } from "lucide-react"
+import { Menu, X, ChevronDown } from "lucide-react"
 import { usePathname } from "next/navigation"
 
 const Header = () => {
@@ -13,15 +19,24 @@ const Header = () => {
 
   const navigation = [
     { name: "Home", href: "/" },
-    { name: "Wallet", href: "/wallet" },
+    { name: "Wallet BNM", href: "/wallet" },
+    { name: "Wallet PAPRD", href: "/wallet/paprd" },
     { name: "Explorer", href: "/explorer" },
-    { name: "Smart Contracts", href: "/contracts" },
     { name: "Buy Tokens", href: "/buy" },
+  ]
+
+  const contractLinks = [
+    { name: "Overview", href: "/contracts" },
+    { name: "Deploy Contract", href: "/contracts/deploy" },
+    { name: "My Contracts", href: "/contracts/list" },
+    { name: "Templates", href: "/contracts/templates" },
   ]
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen)
   }
+
+  const isContractPage = pathname.startsWith('/contracts')
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -47,6 +62,30 @@ const Header = () => {
               {item.name}
             </Link>
           ))}
+          
+          {/* Smart Contracts Dropdown */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button 
+                variant="ghost" 
+                className={`text-sm font-medium transition-colors hover:text-[#d1ff00] ${
+                  isContractPage ? "text-[#d1ff00]" : "text-muted-foreground"
+                }`}
+              >
+                Smart Contracts
+                <ChevronDown className="ml-1 h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-48">
+              {contractLinks.map((item) => (
+                <DropdownMenuItem key={item.name} asChild>
+                  <Link href={item.href} className="cursor-pointer">
+                    {item.name}
+                  </Link>
+                </DropdownMenuItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
         </nav>
 
         <div className="flex items-center gap-2">
@@ -78,6 +117,24 @@ const Header = () => {
                 {item.name}
               </Link>
             ))}
+            
+            {/* Mobile Smart Contracts Section */}
+            <div className="space-y-2">
+              <div className="text-sm font-medium text-muted-foreground">Smart Contracts</div>
+              {contractLinks.map((item) => (
+                <Link
+                  key={item.name}
+                  href={item.href}
+                  className={`block pl-4 text-sm transition-colors hover:text-[#d1ff00] ${
+                    pathname === item.href ? "text-[#d1ff00]" : "text-muted-foreground"
+                  }`}
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  {item.name}
+                </Link>
+              ))}
+            </div>
+            
             <Button asChild className="w-full mt-4 bg-[#d1ff00] text-black hover:bg-lime-300">
               <Link href="/wallet/create" onClick={() => setIsMenuOpen(false)}>
                 Create Wallet

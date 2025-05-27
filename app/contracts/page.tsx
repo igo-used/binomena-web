@@ -43,12 +43,12 @@ export default function ContractsPage() {
         <Card className="card-hover">
           <CardHeader>
             <FileCode className="w-10 h-10 text-blue-600 mb-2" />
-            <CardTitle>Contract Templates</CardTitle>
-            <CardDescription>Browse and use pre-built smart contract templates</CardDescription>
+            <CardTitle>PAPRD Stablecoin</CardTitle>
+            <CardDescription>Interact with the USD-pegged PAPRD stablecoin contract</CardDescription>
           </CardHeader>
           <CardFooter>
             <Button asChild className="w-full">
-              <Link href="/contracts/templates">Browse Templates</Link>
+              <Link href="/contracts/paprd">Manage PAPRD</Link>
             </Button>
           </CardFooter>
         </Card>

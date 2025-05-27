@@ -38,7 +38,7 @@ const Footer = () => {
             </ul>
           </div>
 
-          <div>
+          {/* <div>
             <h3 className="text-lg font-semibold mb-4">Resources</h3>
             <ul className="space-y-2">
               <li>
@@ -57,7 +57,7 @@ const Footer = () => {
                 </Link>
               </li>
             </ul>
-          </div>
+          </div> */}
 
           <div>
             <h3 className="text-lg font-semibold mb-4">Connect</h3>
@@ -74,12 +74,12 @@ const Footer = () => {
               </li>
               <li>
                 <a
-                  href="https://t.me/binomchain"
+                  href="https://x.com/BinomChain"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-sm text-muted-foreground hover:text-primary"
                 >
-                  Telegram
+                  X (Twitter)
                 </a>
               </li>
               <li>
