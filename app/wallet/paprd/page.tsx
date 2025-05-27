@@ -10,6 +10,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { AlertCircle, CheckCircle2, DollarSign, Shield, Eye, EyeOff, Wallet, Send, Coins, TrendingUp, Lock, History, Plus, Import, ExternalLink, Calculator, ArrowRight } from "lucide-react"
 import {
   getPAPRDTotalSupply,
+  getPAPRDInfo,
   getPAPRDBalance,
   transferPAPRD,
   mintPAPRD,
@@ -85,21 +86,16 @@ export default function PAPRDWalletPage() {
 
   const fetchContractInfo = async () => {
     try {
-      const [supplyResult, ownerResult, pausedResult, ratioResult] = await Promise.allSettled([
-        getPAPRDTotalSupply(),
-        getPAPRDOwner(),
-        isPAPRDPaused(),
+      const [infoResult, ratioResult] = await Promise.allSettled([
+        getPAPRDInfo(),
         getCollateralRatio()
       ])
 
-      if (supplyResult.status === 'fulfilled') {
-        setTotalSupply(supplyResult.value.totalSupply)
-      }
-      if (ownerResult.status === 'fulfilled') {
-        setOwner(ownerResult.value.owner)
-      }
-      if (pausedResult.status === 'fulfilled') {
-        setIsPaused(pausedResult.value.paused)
+      if (infoResult.status === 'fulfilled') {
+        const info = infoResult.value
+        setTotalSupply(parseInt(info.totalSupply))
+        setOwner(info.owner)
+        setIsPaused(info.paused)
       }
       if (ratioResult.status === 'fulfilled') {
         setCurrentCollateralRatio(ratioResult.value.ratio)

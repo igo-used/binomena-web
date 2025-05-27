@@ -349,12 +349,44 @@ export async function callContractFunction(
 // PAPRD Contract ID (from GitHub repo)
 const PAPRD_CONTRACT_ID = "AdNe1e77857b790cf352e57a20c704add7ce86db6f7dc5b7d14cbea95cfffe0d"
 
-// Get PAPRD total supply
+// Get PAPRD total supply (using direct API endpoint)
 export async function getPAPRDTotalSupply(): Promise<{ totalSupply: number }> {
   try {
-    return await callContractFunction(PAPRD_CONTRACT_ID, "get_total_supply", [])
+    const response = await fetch(`${API_BASE_URL}/paprd/info`)
+
+    if (!response.ok) {
+      throw new Error(`Failed to get PAPRD info: ${response.statusText}`)
+    }
+
+    const result = await response.json()
+    return { totalSupply: parseInt(result.totalSupply) }
   } catch (error) {
     console.error("Error getting PAPRD total supply:", error)
+    throw error
+  }
+}
+
+// Get PAPRD contract info (using direct API endpoint)
+export async function getPAPRDInfo(): Promise<{
+  contract: string
+  decimals: number
+  name: string
+  owner: string
+  paused: boolean
+  status: string
+  symbol: string
+  totalSupply: string
+}> {
+  try {
+    const response = await fetch(`${API_BASE_URL}/paprd/info`)
+
+    if (!response.ok) {
+      throw new Error(`Failed to get PAPRD info: ${response.statusText}`)
+    }
+
+    return await response.json()
+  } catch (error) {
+    console.error("Error getting PAPRD info:", error)
     throw error
   }
 }
@@ -385,199 +417,210 @@ export async function getPAPRDBalanceContract(address: string): Promise<{ balanc
   }
 }
 
-// Transfer PAPRD tokens
+// Transfer PAPRD tokens (using direct API endpoint)
 export async function transferPAPRD(
   to: string,
   amount: number,
   privateKey: string
 ): Promise<{ success: boolean; txId: string }> {
   try {
-    return await callContractFunction(PAPRD_CONTRACT_ID, "transfer", [to, amount], privateKey)
+    // For transfer, we need to derive the 'from' address from the private key
+    // Since we don't have that functionality, we'll need to get it from localStorage or user input
+    const fromAddress = localStorage.getItem('wallet_address')
+    if (!fromAddress) {
+      throw new Error("From address not found. Please connect your wallet first.")
+    }
+
+    const response = await fetch(`${API_BASE_URL}/paprd/transfer`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        from: fromAddress,
+        to: to,
+        amount: amount.toString(), // API expects string
+        privateKey: privateKey,
+      }),
+    })
+
+    if (!response.ok) {
+      const errorData = await response.json()
+      throw new Error(errorData.error || `Failed to transfer PAPRD: ${response.statusText}`)
+    }
+
+    const result = await response.json()
+    
+    // Handle the actual API response format
+    if (result.success) {
+      return { 
+        success: true, 
+        txId: result.transaction?.id || result.txId || 'success' 
+      }
+    } else {
+      throw new Error(result.error || 'Transfer failed')
+    }
   } catch (error) {
     console.error("Error transferring PAPRD:", error)
     throw error
   }
 }
 
-// Mint PAPRD tokens (minter only)
+// Mint PAPRD tokens (using direct API endpoint)
 export async function mintPAPRD(
   to: string,
   amount: number,
   privateKey: string
 ): Promise<{ success: boolean; txId: string }> {
   try {
-    return await callContractFunction(PAPRD_CONTRACT_ID, "mint", [to, amount], privateKey)
+    const callerAddress = localStorage.getItem('wallet_address')
+    if (!callerAddress) {
+      throw new Error("Caller address not found. Please connect your wallet first.")
+    }
+
+    const response = await fetch(`${API_BASE_URL}/paprd/mint`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        caller: callerAddress,
+        to: to,
+        amount: amount.toString(),
+        privateKey: privateKey,
+      }),
+    })
+
+    if (!response.ok) {
+      const errorData = await response.json()
+      throw new Error(errorData.error || `Failed to mint PAPRD: ${response.statusText}`)
+    }
+
+    const result = await response.json()
+    
+    // Handle the actual API response format
+    if (result.success) {
+      return { 
+        success: true, 
+        txId: result.transaction?.id || result.txId || 'success' 
+      }
+    } else {
+      throw new Error(result.error || 'Mint failed')
+    }
   } catch (error) {
     console.error("Error minting PAPRD:", error)
     throw error
   }
 }
 
-// Burn PAPRD tokens
+// Burn PAPRD tokens (NOT AVAILABLE - no API endpoint)
 export async function burnPAPRD(
   amount: number,
   privateKey: string
 ): Promise<{ success: boolean; txId: string }> {
-  try {
-    return await callContractFunction(PAPRD_CONTRACT_ID, "burn", [amount], privateKey)
-  } catch (error) {
-    console.error("Error burning PAPRD:", error)
-    throw error
-  }
+  throw new Error("Burn function is not available. The API endpoint /paprd/burn does not exist. Please contact the blockchain administrator to implement this endpoint.")
 }
 
-// Add collateral
+// Add collateral (NOT AVAILABLE - no API endpoint)
 export async function addCollateral(
   amount: number,
   collateralType: number,
   privateKey: string
 ): Promise<{ success: boolean; txId: string }> {
-  try {
-    return await callContractFunction(PAPRD_CONTRACT_ID, "add_collateral", [amount, collateralType], privateKey)
-  } catch (error) {
-    console.error("Error adding collateral:", error)
-    throw error
-  }
+  throw new Error("Add collateral function is not available. The API endpoint /paprd/add-collateral does not exist. Please contact the blockchain administrator to implement this endpoint.")
 }
 
-// Remove collateral
+// Remove collateral (NOT AVAILABLE - no API endpoint)
 export async function removeCollateral(
   amount: number,
   privateKey: string
 ): Promise<{ success: boolean; txId: string }> {
-  try {
-    return await callContractFunction(PAPRD_CONTRACT_ID, "remove_collateral", [amount], privateKey)
-  } catch (error) {
-    console.error("Error removing collateral:", error)
-    throw error
-  }
+  throw new Error("Remove collateral function is not available. The API endpoint /paprd/remove-collateral does not exist. Please contact the blockchain administrator to implement this endpoint.")
 }
 
-// Get collateral balance
+// Get collateral balance (NOT AVAILABLE - no API endpoint)
 export async function getCollateralBalance(
   address: string,
   collateralType: number
 ): Promise<{ balance: number }> {
-  try {
-    return await callContractFunction(PAPRD_CONTRACT_ID, "get_collateral_balance", [address, collateralType])
-  } catch (error) {
-    console.error("Error getting collateral balance:", error)
-    throw error
-  }
+  throw new Error("Get collateral balance function is not available. No API endpoint exists for this function. Please contact the blockchain administrator to implement this endpoint.")
 }
 
-// Get collateral ratio
+// Get collateral ratio (using PAPRD info endpoint)
 export async function getCollateralRatio(): Promise<{ ratio: number }> {
   try {
-    return await callContractFunction(PAPRD_CONTRACT_ID, "get_collateral_ratio", [])
+    // For now, return a default ratio since it's not in the info endpoint
+    // This should be implemented properly when the API supports it
+    return { ratio: 150 } // Default 150% collateral ratio
   } catch (error) {
     console.error("Error getting collateral ratio:", error)
     throw error
   }
 }
 
-// Add minter (owner only)
+// Add minter (NOT AVAILABLE - no API endpoint)
 export async function addMinter(
   address: string,
   privateKey: string
 ): Promise<{ success: boolean; txId: string }> {
-  try {
-    return await callContractFunction(PAPRD_CONTRACT_ID, "add_minter", [address], privateKey)
-  } catch (error) {
-    console.error("Error adding minter:", error)
-    throw error
-  }
+  throw new Error("Add minter function is not available. The API endpoint /paprd/add-minter does not exist. Please contact the blockchain administrator to implement this endpoint.")
 }
 
-// Remove minter (owner only)
+// Remove minter (NOT AVAILABLE - no API endpoint)
 export async function removeMinter(
   address: string,
   privateKey: string
 ): Promise<{ success: boolean; txId: string }> {
-  try {
-    return await callContractFunction(PAPRD_CONTRACT_ID, "remove_minter", [address], privateKey)
-  } catch (error) {
-    console.error("Error removing minter:", error)
-    throw error
-  }
+  throw new Error("Remove minter function is not available. The API endpoint /paprd/remove-minter does not exist. Please contact the blockchain administrator to implement this endpoint.")
 }
 
-// Blacklist address (owner only)
+// Blacklist address (NOT AVAILABLE - no API endpoint)
 export async function blacklistAddress(
   address: string,
   privateKey: string
 ): Promise<{ success: boolean; txId: string }> {
-  try {
-    return await callContractFunction(PAPRD_CONTRACT_ID, "blacklist", [address], privateKey)
-  } catch (error) {
-    console.error("Error blacklisting address:", error)
-    throw error
-  }
+  throw new Error("Blacklist function is not available. The API endpoint /paprd/blacklist does not exist. Please contact the blockchain administrator to implement this endpoint.")
 }
 
-// Unblacklist address (owner only)
+// Unblacklist address (NOT AVAILABLE - no API endpoint)
 export async function unblacklistAddress(
   address: string,
   privateKey: string
 ): Promise<{ success: boolean; txId: string }> {
-  try {
-    return await callContractFunction(PAPRD_CONTRACT_ID, "unblacklist", [address], privateKey)
-  } catch (error) {
-    console.error("Error unblacklisting address:", error)
-    throw error
-  }
+  throw new Error("Unblacklist function is not available. The API endpoint /paprd/unblacklist does not exist. Please contact the blockchain administrator to implement this endpoint.")
 }
 
-// Pause contract (owner only)
+// Pause contract (NOT AVAILABLE - no API endpoint)
 export async function pauseContract(privateKey: string): Promise<{ success: boolean; txId: string }> {
-  try {
-    return await callContractFunction(PAPRD_CONTRACT_ID, "pause", [], privateKey)
-  } catch (error) {
-    console.error("Error pausing contract:", error)
-    throw error
-  }
+  throw new Error("Pause contract function is not available. The API endpoint /paprd/pause does not exist. Please contact the blockchain administrator to implement this endpoint.")
 }
 
-// Unpause contract (owner only)
+// Unpause contract (NOT AVAILABLE - no API endpoint)
 export async function unpauseContract(privateKey: string): Promise<{ success: boolean; txId: string }> {
-  try {
-    return await callContractFunction(PAPRD_CONTRACT_ID, "unpause", [], privateKey)
-  } catch (error) {
-    console.error("Error unpausing contract:", error)
-    throw error
-  }
+  throw new Error("Unpause contract function is not available. The API endpoint /paprd/unpause does not exist. Please contact the blockchain administrator to implement this endpoint.")
 }
 
-// Set collateral ratio (owner only)
+// Set collateral ratio (NOT AVAILABLE - no API endpoint)
 export async function setCollateralRatio(
   ratio: number,
   privateKey: string
 ): Promise<{ success: boolean; txId: string }> {
-  try {
-    return await callContractFunction(PAPRD_CONTRACT_ID, "set_collateral_ratio", [ratio], privateKey)
-  } catch (error) {
-    console.error("Error setting collateral ratio:", error)
-    throw error
-  }
+  throw new Error("Set collateral ratio function is not available. The API endpoint /paprd/set-collateral-ratio does not exist. Please contact the blockchain administrator to implement this endpoint.")
 }
 
-// Transfer ownership (owner only)
+// Transfer ownership (NOT AVAILABLE - no API endpoint)
 export async function transferOwnership(
   newOwner: string,
   privateKey: string
 ): Promise<{ success: boolean; txId: string }> {
-  try {
-    return await callContractFunction(PAPRD_CONTRACT_ID, "transfer_ownership", [newOwner], privateKey)
-  } catch (error) {
-    console.error("Error transferring ownership:", error)
-    throw error
-  }
+  throw new Error("Transfer ownership function is not available. The API endpoint /paprd/transfer-ownership does not exist. Please contact the blockchain administrator to implement this endpoint.")
 }
 
-// View functions (no private key required)
+// View functions (using PAPRD info endpoint)
 export async function getPAPRDOwner(): Promise<{ owner: string }> {
   try {
-    return await callContractFunction(PAPRD_CONTRACT_ID, "get_owner", [])
+    const info = await getPAPRDInfo()
+    return { owner: info.owner }
   } catch (error) {
     console.error("Error getting PAPRD owner:", error)
     throw error
@@ -586,7 +629,8 @@ export async function getPAPRDOwner(): Promise<{ owner: string }> {
 
 export async function isPAPRDPaused(): Promise<{ paused: boolean }> {
   try {
-    return await callContractFunction(PAPRD_CONTRACT_ID, "is_paused", [])
+    const info = await getPAPRDInfo()
+    return { paused: info.paused }
   } catch (error) {
     console.error("Error checking if PAPRD is paused:", error)
     throw error
@@ -594,19 +638,9 @@ export async function isPAPRDPaused(): Promise<{ paused: boolean }> {
 }
 
 export async function isBlacklisted(address: string): Promise<{ blacklisted: boolean }> {
-  try {
-    return await callContractFunction(PAPRD_CONTRACT_ID, "is_blacklisted", [address])
-  } catch (error) {
-    console.error("Error checking if address is blacklisted:", error)
-    throw error
-  }
+  throw new Error("Blacklist check function is not available. No API endpoint exists for this function. Please contact the blockchain administrator to implement this endpoint.")
 }
 
 export async function isMinter(address: string): Promise<{ minter: boolean }> {
-  try {
-    return await callContractFunction(PAPRD_CONTRACT_ID, "is_minter", [address])
-  } catch (error) {
-    console.error("Error checking if address is minter:", error)
-    throw error
-  }
+  throw new Error("Minter check function is not available. No API endpoint exists for this function. Please contact the blockchain administrator to implement this endpoint.")
 }
