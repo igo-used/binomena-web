@@ -431,25 +431,47 @@ export async function transferPAPRD(
       throw new Error("From address not found. Please connect your wallet first.")
     }
 
+    // Convert amount to string, ensuring it's an integer (no decimals for PAPRD)
+    // PAPRD uses integer amounts, so 1 PAPRD = "1", not "1.0"
+    const amountStr = Math.floor(amount).toString()
+
+    const payload = {
+      from: senderAddress,
+      to: to,
+      amount: amountStr, // Ensure integer string format
+      privateKey: privateKey,
+    }
+
+    // Debug logging
+    console.log("=== PAPRD Transfer Debug ===")
+    console.log("Payload being sent:", JSON.stringify(payload, null, 2))
+    console.log("API URL:", `${API_BASE_URL}/paprd/transfer`)
+    console.log("Original amount:", amount)
+    console.log("Converted amount:", amountStr)
+    console.log("Amount type:", typeof payload.amount)
+    console.log("From address:", payload.from)
+    console.log("To address:", payload.to)
+    console.log("Private key length:", payload.privateKey.length)
+
     const response = await fetch(`${API_BASE_URL}/paprd/transfer`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({
-        from: senderAddress,
-        to: to,
-        amount: amount.toString(), // API expects string
-        privateKey: privateKey,
-      }),
+      body: JSON.stringify(payload),
     })
 
+    console.log("Response status:", response.status)
+    console.log("Response headers:", Object.fromEntries(response.headers.entries()))
+
     if (!response.ok) {
-      const errorData = await response.json()
+      const errorData = await response.json().catch(() => ({ error: `HTTP ${response.status}` }))
+      console.log("Error response data:", errorData)
       throw new Error(errorData.error || `Failed to transfer PAPRD: ${response.statusText}`)
     }
 
     const result = await response.json()
+    console.log("Success response data:", result)
     
     // Handle the actual API response format
     if (result.success) {
@@ -479,6 +501,9 @@ export async function mintPAPRD(
       throw new Error("Caller address not found. Please connect your wallet first.")
     }
 
+    // Convert amount to string, ensuring it's an integer (no decimals for PAPRD)
+    const amountStr = Math.floor(amount).toString()
+
     const response = await fetch(`${API_BASE_URL}/paprd/mint`, {
       method: "POST",
       headers: {
@@ -487,7 +512,7 @@ export async function mintPAPRD(
       body: JSON.stringify({
         caller: senderAddress,
         to: to,
-        amount: amount.toString(),
+        amount: amountStr,
         privateKey: privateKey,
       }),
     })

@@ -15,22 +15,23 @@ import {
   transferPAPRD,
   mintPAPRD,
   burnPAPRD,
-  addCollateral,
-  removeCollateral,
-  getCollateralBalance,
   getCollateralRatio,
-  addMinter,
-  removeMinter,
-  blacklistAddress,
-  unblacklistAddress,
-  pauseContract,
-  unpauseContract,
-  setCollateralRatio,
-  transferOwnership,
+  // Commented out admin functions for future use
+  // addCollateral,
+  // removeCollateral,
+  // getCollateralBalance,
+  // addMinter,
+  // removeMinter,
+  // blacklistAddress,
+  // unblacklistAddress,
+  // pauseContract,
+  // unpauseContract,
+  // setCollateralRatio,
+  // transferOwnership,
   getPAPRDOwner,
   isPAPRDPaused,
-  isBlacklisted,
-  isMinter
+  // isBlacklisted,
+  // isMinter
 } from "@/lib/api"
 import Link from "next/link"
 
@@ -76,6 +77,17 @@ export default function PAPRDWalletPage() {
     }
     
     fetchContractInfo()
+    
+    // Prevent browser extension wallet conflicts
+    if (typeof window !== 'undefined') {
+      // Disable any automatic wallet detection that might interfere
+      window.addEventListener('error', (e) => {
+        if (e.message && e.message.includes('inpage')) {
+          e.preventDefault()
+          console.warn('Browser wallet extension detected, ignoring to prevent conflicts')
+        }
+      })
+    }
   }, [])
 
   useEffect(() => {
@@ -708,13 +720,13 @@ function ConnectedWalletInterface({
 
       {/* Main Operations Tabs */}
       <Tabs defaultValue="send" className="space-y-4">
-        <TabsList className="grid w-full grid-cols-6">
+        <TabsList className="grid w-full grid-cols-4">
           <TabsTrigger value="send">Send</TabsTrigger>
           <TabsTrigger value="receive">Receive</TabsTrigger>
           <TabsTrigger value="mint">Mint/Burn</TabsTrigger>
-          <TabsTrigger value="collateral">Collateral</TabsTrigger>
-          <TabsTrigger value="admin">Admin</TabsTrigger>
           <TabsTrigger value="history">History</TabsTrigger>
+          {/* <TabsTrigger value="admin">Admin</TabsTrigger> */}
+          {/* <TabsTrigger value="collateral">Collateral</TabsTrigger> */}
         </TabsList>
 
         {/* Send Tab */}
@@ -826,7 +838,30 @@ function ConnectedWalletInterface({
           </div>
         </TabsContent>
 
-        {/* Collateral Tab */}
+        {/* History Tab */}
+        <TabsContent value="history" className="space-y-4" id="paprd-history">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <History className="h-5 w-5" />
+                PAPRD Transaction History
+              </CardTitle>
+              <CardDescription>Your PAPRD smart contract transaction history</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="text-center py-8">
+                <History className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
+                <p className="text-muted-foreground">Transaction history coming soon</p>
+                <p className="text-sm text-muted-foreground mt-2">
+                  View all your PAPRD transfers, mints, burns, and smart contract interactions
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        {/* DISABLED FOR NOW - COLLATERAL TAB & ADMIN TAB */}
+        {/* 
         <TabsContent value="collateral" className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <Card>
@@ -865,7 +900,6 @@ function ConnectedWalletInterface({
           </div>
         </TabsContent>
 
-        {/* Admin Tab */}
         <TabsContent value="admin" className="space-y-4">
           <AdminPanel 
             onOperation={onOperation}
@@ -874,28 +908,7 @@ function ConnectedWalletInterface({
             userAddress={userAddress}
           />
         </TabsContent>
-
-        {/* History Tab */}
-        <TabsContent value="history" className="space-y-4" id="paprd-history">
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <History className="h-5 w-5" />
-                PAPRD Transaction History
-              </CardTitle>
-              <CardDescription>Your PAPRD smart contract transaction history</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="text-center py-8">
-                <History className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
-                <p className="text-muted-foreground">Transaction history coming soon</p>
-                <p className="text-sm text-muted-foreground mt-2">
-                  View all your PAPRD transfers, mints, burns, and smart contract interactions
-                </p>
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
+        */}
       </Tabs>
     </div>
   )
@@ -916,7 +929,19 @@ function TransferForm({ onTransfer, loading, disabled, maxAmount }: TransferForm
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     if (to && amount) {
-      onTransfer(to, parseFloat(amount))
+      // Validate amount is a positive integer
+      const numAmount = parseFloat(amount)
+      if (isNaN(numAmount) || numAmount <= 0) {
+        alert("Please enter a valid positive amount")
+        return
+      }
+      if (numAmount > maxAmount) {
+        alert(`Amount cannot exceed your balance of ${maxAmount} PAPRD`)
+        return
+      }
+      
+      console.log("Form submitting with:", { to, amount: numAmount, maxAmount })
+      onTransfer(to, numAmount)
       setTo("")
       setAmount("")
     }
@@ -928,21 +953,25 @@ function TransferForm({ onTransfer, loading, disabled, maxAmount }: TransferForm
         <Label htmlFor="transferTo">Recipient Address</Label>
         <Input
           id="transferTo"
+          name="transferTo"
           placeholder="Enter recipient address"
           value={to}
           onChange={(e) => setTo(e.target.value)}
+          required
         />
       </div>
       <div className="space-y-2">
         <Label htmlFor="transferAmount">Amount (PAPRD)</Label>
         <Input
           id="transferAmount"
+          name="transferAmount"
           type="number"
           step="0.000001"
           placeholder="0.00"
           value={amount}
           onChange={(e) => setAmount(e.target.value)}
           max={maxAmount}
+          required
         />
         <p className="text-xs text-muted-foreground">
           Available: {maxAmount.toLocaleString()} PAPRD
