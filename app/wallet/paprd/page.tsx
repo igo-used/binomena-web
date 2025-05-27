@@ -730,7 +730,7 @@ function ConnectedWalletInterface({
             <CardContent className="space-y-4">
               <TransferForm 
                 onTransfer={(to, amount) => 
-                  onOperation('transfer', () => transferPAPRD(to, amount, privateKey))
+                  onOperation('transfer', () => transferPAPRD(to, amount, privateKey, userAddress))
                 }
                 loading={loading.transfer}
                 disabled={!privateKey}
@@ -799,7 +799,7 @@ function ConnectedWalletInterface({
               <CardContent className="space-y-4">
                 <MintForm 
                   onMint={(to, amount) => 
-                    onOperation('mint', () => mintPAPRD(to, amount, privateKey))
+                    onOperation('mint', () => mintPAPRD(to, amount, privateKey, userAddress))
                   }
                   loading={loading.mint}
                   disabled={!privateKey}

@@ -421,13 +421,13 @@ export async function getPAPRDBalanceContract(address: string): Promise<{ balanc
 export async function transferPAPRD(
   to: string,
   amount: number,
-  privateKey: string
+  privateKey: string,
+  fromAddress?: string
 ): Promise<{ success: boolean; txId: string }> {
   try {
-    // For transfer, we need to derive the 'from' address from the private key
-    // Since we don't have that functionality, we'll need to get it from localStorage or user input
-    const fromAddress = localStorage.getItem('wallet_address')
-    if (!fromAddress) {
+    // Try to get from address from parameter first, then localStorage
+    let senderAddress = fromAddress || localStorage.getItem('wallet_address')
+    if (!senderAddress) {
       throw new Error("From address not found. Please connect your wallet first.")
     }
 
@@ -437,7 +437,7 @@ export async function transferPAPRD(
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        from: fromAddress,
+        from: senderAddress,
         to: to,
         amount: amount.toString(), // API expects string
         privateKey: privateKey,
@@ -470,11 +470,12 @@ export async function transferPAPRD(
 export async function mintPAPRD(
   to: string,
   amount: number,
-  privateKey: string
+  privateKey: string,
+  callerAddress?: string
 ): Promise<{ success: boolean; txId: string }> {
   try {
-    const callerAddress = localStorage.getItem('wallet_address')
-    if (!callerAddress) {
+    let senderAddress = callerAddress || localStorage.getItem('wallet_address')
+    if (!senderAddress) {
       throw new Error("Caller address not found. Please connect your wallet first.")
     }
 
@@ -484,7 +485,7 @@ export async function mintPAPRD(
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        caller: callerAddress,
+        caller: senderAddress,
         to: to,
         amount: amount.toString(),
         privateKey: privateKey,
