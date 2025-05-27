@@ -13,9 +13,10 @@ import {
   getPAPRDInfo,
   getPAPRDBalance,
   transferPAPRD,
-  mintPAPRD,
-  burnPAPRD,
   getCollateralRatio,
+  getPAPRDOwner,
+  isPAPRDPaused,
+  // Removed mint/burn functions for simplified UI - admin can use terminal/API directly
   // Commented out admin functions for future use
   // addCollateral,
   // removeCollateral,
@@ -28,8 +29,6 @@ import {
   // unpauseContract,
   // setCollateralRatio,
   // transferOwnership,
-  getPAPRDOwner,
-  isPAPRDPaused,
   // isBlacklisted,
   // isMinter
 } from "@/lib/api"
@@ -303,34 +302,37 @@ export default function PAPRDWalletPage() {
         <Card className="card-hover">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <Plus className="h-5 w-5" />
-              Mint PAPRD
+              <History className="h-5 w-5" />
+              Transaction History
             </CardTitle>
-            <CardDescription>Create new PAPRD tokens (authorized users)</CardDescription>
+            <CardDescription>View your PAPRD transaction history</CardDescription>
           </CardHeader>
           <CardContent>
             <p className="text-sm text-muted-foreground">
-              Mint new PAPRD tokens if you have minter privileges on the smart contract.
+              Track all your PAPRD transfers and transactions on the blockchain.
             </p>
           </CardContent>
           <CardFooter>
-            <Button asChild variant="outline" className="w-full" disabled={!hasWallet}>
-              <Link href="#mint-paprd">Mint PAPRD</Link>
+            <Button asChild variant="outline" className="w-full">
+              <Link href="#paprd-history">View History</Link>
             </Button>
           </CardFooter>
         </Card>
 
         <Card className="card-hover">
           <CardHeader>
-            <CardTitle>PAPRD Transaction History</CardTitle>
-            <CardDescription>View your PAPRD transaction history</CardDescription>
+            <CardTitle className="flex items-center gap-2">
+              <Calculator className="h-5 w-5" />
+              Balance Checker
+            </CardTitle>
+            <CardDescription>Check PAPRD balance of any address</CardDescription>
           </CardHeader>
           <CardContent>
-            <p className="text-sm text-muted-foreground">View all PAPRD transactions associated with your wallet address.</p>
+            <p className="text-sm text-muted-foreground">Quickly check the PAPRD balance of any Binomena wallet address.</p>
           </CardContent>
           <CardFooter>
             <Button asChild variant="outline" className="w-full">
-              <Link href="#paprd-history">View History</Link>
+              <Link href="#balance-checker">Check Balance</Link>
             </Button>
           </CardFooter>
         </Card>
@@ -720,13 +722,10 @@ function ConnectedWalletInterface({
 
       {/* Main Operations Tabs */}
       <Tabs defaultValue="send" className="space-y-4">
-        <TabsList className="grid w-full grid-cols-4">
+        <TabsList className="grid w-full grid-cols-3">
           <TabsTrigger value="send">Send</TabsTrigger>
           <TabsTrigger value="receive">Receive</TabsTrigger>
-          <TabsTrigger value="mint">Mint/Burn</TabsTrigger>
           <TabsTrigger value="history">History</TabsTrigger>
-          {/* <TabsTrigger value="admin">Admin</TabsTrigger> */}
-          {/* <TabsTrigger value="collateral">Collateral</TabsTrigger> */}
         </TabsList>
 
         {/* Send Tab */}
@@ -797,47 +796,6 @@ function ConnectedWalletInterface({
           </div>
         </TabsContent>
 
-        {/* Mint/Burn Tab */}
-        <TabsContent value="mint" className="space-y-4" id="mint-paprd">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Plus className="h-5 w-5" />
-                  Mint PAPRD
-                </CardTitle>
-                <CardDescription>Create new PAPRD tokens (minter only)</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <MintForm 
-                  onMint={(to, amount) => 
-                    onOperation('mint', () => mintPAPRD(to, amount, privateKey, userAddress))
-                  }
-                  loading={loading.mint}
-                  disabled={!privateKey}
-                />
-              </CardContent>
-            </Card>
-            
-            <Card>
-              <CardHeader>
-                <CardTitle>Burn PAPRD</CardTitle>
-                <CardDescription>Destroy PAPRD tokens from your balance</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <BurnForm 
-                  onBurn={(amount) => 
-                    onOperation('burn', () => burnPAPRD(amount, privateKey))
-                  }
-                  loading={loading.burn}
-                  disabled={!privateKey}
-                  maxAmount={balance}
-                />
-              </CardContent>
-            </Card>
-          </div>
-        </TabsContent>
-
         {/* History Tab */}
         <TabsContent value="history" className="space-y-4" id="paprd-history">
           <Card>
@@ -859,56 +817,6 @@ function ConnectedWalletInterface({
             </CardContent>
           </Card>
         </TabsContent>
-
-        {/* DISABLED FOR NOW - COLLATERAL TAB & ADMIN TAB */}
-        {/* 
-        <TabsContent value="collateral" className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <Card>
-              <CardHeader>
-                <CardTitle>Add Collateral</CardTitle>
-                <CardDescription>Increase your collateral position</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <CollateralForm 
-                  type="add"
-                  onSubmit={(amount: number, collateralType?: number) => 
-                    onOperation('addCollateral', () => addCollateral(amount, collateralType || 0, privateKey))
-                  }
-                  loading={loading.addCollateral}
-                  disabled={!privateKey}
-                />
-              </CardContent>
-            </Card>
-            
-            <Card>
-              <CardHeader>
-                <CardTitle>Remove Collateral</CardTitle>
-                <CardDescription>Withdraw collateral from your position</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <CollateralForm 
-                  type="remove"
-                  onSubmit={(amount: number) => 
-                    onOperation('removeCollateral', () => removeCollateral(amount, privateKey))
-                  }
-                  loading={loading.removeCollateral}
-                  disabled={!privateKey}
-                />
-              </CardContent>
-            </Card>
-          </div>
-        </TabsContent>
-
-        <TabsContent value="admin" className="space-y-4">
-          <AdminPanel 
-            onOperation={onOperation}
-            loading={loading}
-            privateKey={privateKey}
-            userAddress={userAddress}
-          />
-        </TabsContent>
-        */}
       </Tabs>
     </div>
   )
@@ -984,378 +892,6 @@ function TransferForm({ onTransfer, loading, disabled, maxAmount }: TransferForm
   )
 }
 
-interface MintFormProps {
-  onMint: (to: string, amount: number) => void
-  loading: boolean
-  disabled: boolean
-}
-
-function MintForm({ onMint, loading, disabled }: MintFormProps) {
-  const [to, setTo] = useState("")
-  const [amount, setAmount] = useState("")
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    if (to && amount) {
-      onMint(to, parseFloat(amount))
-      setTo("")
-      setAmount("")
-    }
-  }
-
-  return (
-    <form onSubmit={handleSubmit} className="space-y-4">
-      <div className="space-y-2">
-        <Label htmlFor="mintTo">Recipient Address</Label>
-        <Input
-          id="mintTo"
-          placeholder="Enter recipient address"
-          value={to}
-          onChange={(e) => setTo(e.target.value)}
-        />
-      </div>
-      <div className="space-y-2">
-        <Label htmlFor="mintAmount">Amount (PAPRD)</Label>
-        <Input
-          id="mintAmount"
-          type="number"
-          step="0.000001"
-          placeholder="0.00"
-          value={amount}
-          onChange={(e) => setAmount(e.target.value)}
-        />
-      </div>
-      <Button type="submit" disabled={loading || disabled || !to || !amount} className="w-full">
-        {loading ? "Minting..." : "Mint PAPRD"}
-      </Button>
-    </form>
-  )
-}
-
-interface BurnFormProps {
-  onBurn: (amount: number) => void
-  loading: boolean
-  disabled: boolean
-  maxAmount: number
-}
-
-function BurnForm({ onBurn, loading, disabled, maxAmount }: BurnFormProps) {
-  const [amount, setAmount] = useState("")
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    if (amount) {
-      onBurn(parseFloat(amount))
-      setAmount("")
-    }
-  }
-
-  return (
-    <form onSubmit={handleSubmit} className="space-y-4">
-      <div className="space-y-2">
-        <Label htmlFor="burnAmount">Amount (PAPRD)</Label>
-        <Input
-          id="burnAmount"
-          type="number"
-          step="0.000001"
-          placeholder="0.00"
-          value={amount}
-          onChange={(e) => setAmount(e.target.value)}
-          max={maxAmount}
-        />
-        <p className="text-xs text-muted-foreground">
-          Max available: {maxAmount.toLocaleString()} PAPRD
-        </p>
-      </div>
-      <Button type="submit" disabled={loading || disabled || !amount} className="w-full">
-        {loading ? "Burning..." : "Burn PAPRD"}
-      </Button>
-    </form>
-  )
-}
-
-interface CollateralFormProps {
-  type: "add" | "remove"
-  onSubmit: (amount: number, collateralType?: number) => void
-  loading: boolean
-  disabled: boolean
-}
-
-function CollateralForm({ type, onSubmit, loading, disabled }: CollateralFormProps) {
-  const [amount, setAmount] = useState("")
-  const [collateralType, setCollateralType] = useState("0")
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    if (amount) {
-      if (type === "add") {
-        onSubmit(parseFloat(amount), parseInt(collateralType))
-      } else {
-        onSubmit(parseFloat(amount))
-      }
-      setAmount("")
-    }
-  }
-
-  return (
-    <form onSubmit={handleSubmit} className="space-y-4">
-      <div className="space-y-2">
-        <Label htmlFor="collateralAmount">Amount</Label>
-        <Input
-          id="collateralAmount"
-          type="number"
-          step="0.000001"
-          placeholder="0.00"
-          value={amount}
-          onChange={(e) => setAmount(e.target.value)}
-        />
-      </div>
-      {type === "add" && (
-        <div className="space-y-2">
-          <Label htmlFor="collateralType">Collateral Type</Label>
-          <select
-            id="collateralType"
-            value={collateralType}
-            onChange={(e) => setCollateralType(e.target.value)}
-            className="w-full p-2 border rounded"
-          >
-            <option value="0">FIAT</option>
-            <option value="1">BNM</option>
-          </select>
-        </div>
-      )}
-      <Button type="submit" disabled={loading || disabled || !amount} className="w-full">
-        {loading ? `${type === "add" ? "Adding" : "Removing"}...` : `${type === "add" ? "Add" : "Remove"} Collateral`}
-      </Button>
-    </form>
-  )
-}
-
-interface AdminPanelProps {
-  onOperation: (operation: string, fn: () => Promise<any>) => void
-  loading: { [key: string]: boolean }
-  privateKey: string
-  userAddress: string
-}
-
-function AdminPanel({ onOperation, loading, privateKey, userAddress }: AdminPanelProps) {
-  const [targetAddress, setTargetAddress] = useState("")
-  const [newRatio, setNewRatio] = useState("150")
-  const [newOwner, setNewOwner] = useState("")
-  const [checkAddress, setCheckAddress] = useState(userAddress)
-  const [results, setResults] = useState<any>({})
-  const [checking, setChecking] = useState(false)
-
-  const checkAll = async () => {
-    if (!checkAddress) return
-    
-    setChecking(true)
-    try {
-      const [blacklisted, minter] = await Promise.allSettled([
-        isBlacklisted(checkAddress),
-        isMinter(checkAddress)
-      ])
-
-      setResults({
-        blacklisted: blacklisted.status === 'fulfilled' ? blacklisted.value.blacklisted : 'Error',
-        minter: minter.status === 'fulfilled' ? minter.value.minter : 'Error'
-      })
-    } catch (err) {
-      console.error("Error checking address:", err)
-    } finally {
-      setChecking(false)
-    }
-  }
-
-  return (
-    <div className="space-y-6">
-      {/* Address Check */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Address Verification</CardTitle>
-          <CardDescription>Check address status and permissions using smart contract</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="flex gap-2">
-            <Input
-              placeholder="Enter address to check"
-              value={checkAddress}
-              onChange={(e) => setCheckAddress(e.target.value)}
-              className="flex-1"
-            />
-            <Button onClick={checkAll} disabled={checking || !checkAddress}>
-              {checking ? "Checking..." : "Check"}
-            </Button>
-          </div>
-
-          {Object.keys(results).length > 0 && (
-            <div className="space-y-2 p-4 bg-muted rounded-lg">
-              <div className="flex justify-between">
-                <span>Blacklisted:</span>
-                <span className={results.blacklisted ? 'text-red-500' : 'text-green-500'}>
-                  {results.blacklisted ? 'Yes' : 'No'}
-                </span>
-              </div>
-              <div className="flex justify-between">
-                <span>Minter:</span>
-                <span className={results.minter ? 'text-green-500' : 'text-gray-500'}>
-                  {results.minter ? 'Yes' : 'No'}
-                </span>
-              </div>
-            </div>
-          )}
-        </CardContent>
-      </Card>
-
-      {/* Admin Functions */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Shield className="h-5 w-5" />
-              Minter Management
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="minterAddress">Address</Label>
-              <Input
-                id="minterAddress"
-                placeholder="Enter address"
-                value={targetAddress}
-                onChange={(e) => setTargetAddress(e.target.value)}
-              />
-            </div>
-            <div className="flex gap-2">
-              <Button 
-                onClick={() => onOperation('addMinter', () => addMinter(targetAddress, privateKey))}
-                disabled={loading.addMinter || !privateKey || !targetAddress}
-                className="flex-1"
-              >
-                {loading.addMinter ? "Adding..." : "Add Minter"}
-              </Button>
-              <Button 
-                onClick={() => onOperation('removeMinter', () => removeMinter(targetAddress, privateKey))}
-                disabled={loading.removeMinter || !privateKey || !targetAddress}
-                variant="outline"
-                className="flex-1"
-              >
-                {loading.removeMinter ? "Removing..." : "Remove Minter"}
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Lock className="h-5 w-5" />
-              Blacklist Management
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="blacklistAddress">Address</Label>
-              <Input
-                id="blacklistAddress"
-                placeholder="Enter address"
-                value={targetAddress}
-                onChange={(e) => setTargetAddress(e.target.value)}
-              />
-            </div>
-            <div className="flex gap-2">
-              <Button 
-                onClick={() => onOperation('blacklist', () => blacklistAddress(targetAddress, privateKey))}
-                disabled={loading.blacklist || !privateKey || !targetAddress}
-                variant="destructive"
-                className="flex-1"
-              >
-                {loading.blacklist ? "Blacklisting..." : "Blacklist"}
-              </Button>
-              <Button 
-                onClick={() => onOperation('unblacklist', () => unblacklistAddress(targetAddress, privateKey))}
-                disabled={loading.unblacklist || !privateKey || !targetAddress}
-                variant="outline"
-                className="flex-1"
-              >
-                {loading.unblacklist ? "Unblacklisting..." : "Unblacklist"}
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <TrendingUp className="h-5 w-5" />
-              Contract Settings
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="newRatio">Collateral Ratio (%)</Label>
-              <Input
-                id="newRatio"
-                type="number"
-                placeholder="150"
-                value={newRatio}
-                onChange={(e) => setNewRatio(e.target.value)}
-              />
-            </div>
-            <Button 
-              onClick={() => onOperation('setRatio', () => setCollateralRatio(parseFloat(newRatio), privateKey))}
-              disabled={loading.setRatio || !privateKey || !newRatio}
-              className="w-full"
-            >
-              {loading.setRatio ? "Updating..." : "Set Collateral Ratio"}
-            </Button>
-            
-            <div className="flex gap-2">
-              <Button 
-                onClick={() => onOperation('pause', () => pauseContract(privateKey))}
-                disabled={loading.pause || !privateKey}
-                variant="destructive"
-                className="flex-1"
-              >
-                {loading.pause ? "Pausing..." : "Pause Contract"}
-              </Button>
-              <Button 
-                onClick={() => onOperation('unpause', () => unpauseContract(privateKey))}
-                disabled={loading.unpause || !privateKey}
-                variant="outline"
-                className="flex-1"
-              >
-                {loading.unpause ? "Unpausing..." : "Unpause Contract"}
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle>Transfer Ownership</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="newOwner">New Owner Address</Label>
-              <Input
-                id="newOwner"
-                placeholder="Enter new owner address"
-                value={newOwner}
-                onChange={(e) => setNewOwner(e.target.value)}
-              />
-            </div>
-            <Button 
-              onClick={() => onOperation('transferOwnership', () => transferOwnership(newOwner, privateKey))}
-              disabled={loading.transferOwnership || !privateKey || !newOwner}
-              variant="destructive"
-              className="w-full"
-            >
-              {loading.transferOwnership ? "Transferring..." : "Transfer Ownership"}
-            </Button>
-          </CardContent>
-        </Card>
-      </div>
-    </div>
-  )
-} 
+// REMOVED ADMIN COMPONENTS TO FIX LINTER ERRORS
+// CollateralForm and AdminPanel components removed since admin functions are not available
+// These will be re-added when the API endpoints are implemented 
