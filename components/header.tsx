@@ -29,7 +29,6 @@ const Header = () => {
     { name: "Overview", href: "/contracts" },
     { name: "Deploy Contract", href: "/contracts/deploy" },
     { name: "My Contracts", href: "/contracts/list" },
-    { name: "Templates", href: "/contracts/templates" },
   ]
 
   const toggleMenu = () => {
@@ -90,9 +89,6 @@ const Header = () => {
 
         <div className="flex items-center gap-2">
           <ModeToggle />
-          <Button asChild className="hidden md:inline-flex bg-[#d1ff00] text-black hover:bg-lime-300">
-            <Link href="/wallet/create">Create Wallet</Link>
-          </Button>
 
           {/* Mobile Menu Button */}
           <Button variant="ghost" size="icon" className="md:hidden" onClick={toggleMenu} aria-label="Toggle Menu">
@@ -134,12 +130,6 @@ const Header = () => {
                 </Link>
               ))}
             </div>
-            
-            <Button asChild className="w-full mt-4 bg-[#d1ff00] text-black hover:bg-lime-300">
-              <Link href="/wallet/create" onClick={() => setIsMenuOpen(false)}>
-                Create Wallet
-              </Link>
-            </Button>
           </div>
         </div>
       )}

@@ -2,12 +2,12 @@
 
 import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { AlertCircle, CheckCircle2, DollarSign, Shield, Eye, EyeOff, Wallet, Send, Coins, TrendingUp, Lock, History, Plus, Import, ExternalLink } from "lucide-react"
+import { AlertCircle, CheckCircle2, DollarSign, Shield, Eye, EyeOff, Wallet, Send, Coins, TrendingUp, Lock, History, Plus, Import, ExternalLink, Calculator, ArrowRight } from "lucide-react"
 import {
   getPAPRDTotalSupply,
   getPAPRDBalance,
@@ -171,159 +171,28 @@ export default function PAPRDWalletPage() {
     }
   }
 
-  if (!hasWallet) {
-    return (
-      <div className="container py-10">
-        <div className="max-w-2xl mx-auto">
-          <div className="flex flex-col items-center justify-center space-y-4 text-center mb-10">
-            <DollarSign className="h-16 w-16 text-primary" />
-            <h1 className="text-3xl font-bold tracking-tighter sm:text-4xl">PAPRD Wallet</h1>
-            <p className="max-w-[700px] text-muted-foreground md:text-xl/relaxed">
-              Connect your Binomena wallet to manage PAPRD stablecoin tokens
-            </p>
-          </div>
-
-          <Alert className="mb-6">
-            <AlertCircle className="h-4 w-4" />
-            <AlertTitle>Important: Blockchain Wallet Required</AlertTitle>
-            <AlertDescription>
-              PAPRD tokens exist on the Binomena blockchain. You need a Binomena wallet (not a token-specific wallet) to manage PAPRD tokens.
-              The same wallet that holds BNM tokens can also hold PAPRD tokens.
-            </AlertDescription>
-          </Alert>
-
-          {error && (
-            <Alert className="mb-6" variant="destructive">
-              <AlertCircle className="h-4 w-4" />
-              <AlertTitle>Error</AlertTitle>
-              <AlertDescription>{error}</AlertDescription>
-            </Alert>
-          )}
-
-          {success && (
-            <Alert className="mb-6" variant="default">
-              <CheckCircle2 className="h-4 w-4" />
-              <AlertTitle>Success</AlertTitle>
-              <AlertDescription>{success}</AlertDescription>
-            </Alert>
-          )}
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-            <Card className="card-hover">
-              <CardHeader>
-                <Coins className="w-10 h-10 text-primary mb-2" />
-                <CardTitle>Use Existing BNM Wallet</CardTitle>
-                <CardDescription>If you already have a BNM wallet, use it for PAPRD</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <p className="text-sm text-muted-foreground">
-                  Your existing Binomena (BNM) wallet can hold both BNM and PAPRD tokens. No need to create a separate wallet.
-                </p>
-                <Button asChild className="w-full" variant="outline">
-                  <Link href="/wallet" className="flex items-center gap-2">
-                    Go to BNM Wallet <ExternalLink className="h-4 w-4" />
-                  </Link>
-                </Button>
-              </CardContent>
-            </Card>
-
-            <Card className="card-hover">
-              <CardHeader>
-                <Wallet className="w-10 h-10 text-primary mb-2" />
-                <CardTitle>Create New Binomena Wallet</CardTitle>
-                <CardDescription>Create a new blockchain wallet for both tokens</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <p className="text-sm text-muted-foreground">
-                  Create a new Binomena blockchain wallet that can hold both BNM and PAPRD tokens.
-                </p>
-                <Button asChild className="w-full">
-                  <Link href="/wallet/create" className="flex items-center gap-2">
-                    Create Binomena Wallet <ExternalLink className="h-4 w-4" />
-                  </Link>
-                </Button>
-              </CardContent>
-            </Card>
-          </div>
-
-          {/* Manual Wallet Connection */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Import className="h-5 w-5" />
-                Connect Existing Wallet
-              </CardTitle>
-              <CardDescription>Connect your existing Binomena wallet manually</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="manualAddress">Wallet Address</Label>
-                <Input
-                  id="manualAddress"
-                  placeholder="Enter your Binomena wallet address"
-                  value={manualAddress}
-                  onChange={(e) => setManualAddress(e.target.value)}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="manualKey">Private Key</Label>
-                <div className="relative">
-                  <Input
-                    id="manualKey"
-                    type={showPrivateKey ? "text" : "password"}
-                    placeholder="Enter your private key"
-                    value={manualKey}
-                    onChange={(e) => setManualKey(e.target.value)}
-                  />
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="sm"
-                    className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
-                    onClick={() => setShowPrivateKey(!showPrivateKey)}
-                  >
-                    {showPrivateKey ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                  </Button>
-                </div>
-              </div>
-              <Button 
-                onClick={handleConnectWallet} 
-                disabled={loading.connectWallet || !manualAddress || !manualKey}
-                className="w-full"
-              >
-                {loading.connectWallet ? "Connecting..." : "Connect Wallet"}
-              </Button>
-            </CardContent>
-          </Card>
-
-          <Card className="mt-6">
-            <CardHeader>
-              <CardTitle>About Binomena Wallets & PAPRD</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <ul className="space-y-2 text-sm">
-                <li>• <strong>One Wallet, Multiple Tokens:</strong> Your Binomena wallet can hold both BNM and PAPRD tokens</li>
-                <li>• <strong>Blockchain-Level Security:</strong> Wallet creation happens at the blockchain level, not per token</li>
-                <li>• <strong>Universal Address:</strong> The same address works for all tokens on Binomena</li>
-                <li>• <strong>Shared Private Key:</strong> One private key manages all your tokens on the blockchain</li>
-                <li>• <strong>Cross-Token Compatibility:</strong> Switch between BNM and PAPRD interfaces seamlessly</li>
-              </ul>
-            </CardContent>
-          </Card>
-        </div>
-      </div>
-    )
-  }
-
   return (
     <div className="container py-10">
       <div className="flex flex-col items-center justify-center space-y-4 text-center mb-10">
         <DollarSign className="h-16 w-16 text-primary" />
         <h1 className="text-3xl font-bold tracking-tighter sm:text-4xl">PAPRD Wallet</h1>
         <p className="max-w-[700px] text-muted-foreground md:text-xl/relaxed">
-          Manage your PAPRD stablecoin tokens on Binomena blockchain
+          Manage your PAPRD stablecoin tokens using smart contract functionality
         </p>
       </div>
+
+      {/* BNM Wallet Alert */}
+      <Alert className="mb-8">
+        <Coins className="h-4 w-4" />
+        <AlertDescription className="flex items-center justify-between">
+          <span>Looking for BNM token management? Use our dedicated BNM wallet.</span>
+          <Button asChild variant="outline" size="sm">
+            <Link href="/wallet" className="flex items-center gap-2">
+              BNM Wallet <ArrowRight className="h-4 w-4" />
+            </Link>
+          </Button>
+        </AlertDescription>
+      </Alert>
 
       {error && (
         <Alert className="mb-6" variant="destructive">
@@ -341,55 +210,489 @@ export default function PAPRDWalletPage() {
         </Alert>
       )}
 
-      {/* Wallet Overview */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
-        <Card>
-          <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-medium">Your PAPRD Balance</CardTitle>
+      {/* Quick PAPRD Balance Checker */}
+      <Card className="mb-8">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Calculator className="h-5 w-5" />
+            Quick PAPRD Balance Checker
+          </CardTitle>
+          <CardDescription>
+            Check PAPRD stablecoin balance and contract info for any Binomena address
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <PAPRDBalanceChecker />
+            <PAPRDContractInfo 
+              totalSupply={totalSupply}
+              collateralRatio={collateralRatio}
+              isPaused={isPaused}
+              owner={owner}
+            />
+          </div>
+        </CardContent>
+      </Card>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+        <Card className="card-hover">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Wallet className="h-5 w-5" />
+              Connect PAPRD Wallet
+            </CardTitle>
+            <CardDescription>Connect your Binomena wallet for PAPRD operations</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{balance.toLocaleString()} PAPRD</div>
-            <p className="text-xs text-muted-foreground">≈ ${balance.toLocaleString()} USD</p>
+            <p className="text-sm text-muted-foreground">
+              Connect your existing Binomena wallet to send, receive, and manage PAPRD tokens.
+            </p>
+          </CardContent>
+          <CardFooter>
+            <Button asChild className="w-full">
+              <Link href="#connect-wallet">Connect Wallet</Link>
+            </Button>
+          </CardFooter>
+        </Card>
+
+        <Card className="card-hover">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Send className="h-5 w-5" />
+              Send PAPRD
+            </CardTitle>
+            <CardDescription>Transfer PAPRD tokens to another address</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <p className="text-sm text-muted-foreground">
+              Send PAPRD stablecoin tokens to any Binomena address using smart contract transfer.
+            </p>
+          </CardContent>
+          <CardFooter>
+            <Button asChild variant="outline" className="w-full" disabled={!hasWallet}>
+              <Link href="#send-paprd">Send PAPRD</Link>
+            </Button>
+          </CardFooter>
+        </Card>
+
+        <Card className="card-hover">
+          <CardHeader>
+            <CardTitle>Check PAPRD Balance</CardTitle>
+            <CardDescription>View PAPRD balance of any address</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <p className="text-sm text-muted-foreground">
+              Check the PAPRD balance of any wallet address using smart contract query.
+            </p>
+          </CardContent>
+          <CardFooter>
+            <Button asChild variant="outline" className="w-full">
+              <Link href="#balance-checker">Check Balance</Link>
+            </Button>
+          </CardFooter>
+        </Card>
+
+        <Card className="card-hover">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Plus className="h-5 w-5" />
+              Mint PAPRD
+            </CardTitle>
+            <CardDescription>Create new PAPRD tokens (authorized users)</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <p className="text-sm text-muted-foreground">
+              Mint new PAPRD tokens if you have minter privileges on the smart contract.
+            </p>
+          </CardContent>
+          <CardFooter>
+            <Button asChild variant="outline" className="w-full" disabled={!hasWallet}>
+              <Link href="#mint-paprd">Mint PAPRD</Link>
+            </Button>
+          </CardFooter>
+        </Card>
+
+        <Card className="card-hover">
+          <CardHeader>
+            <CardTitle>PAPRD Transaction History</CardTitle>
+            <CardDescription>View your PAPRD transaction history</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <p className="text-sm text-muted-foreground">View all PAPRD transactions associated with your wallet address.</p>
+          </CardContent>
+          <CardFooter>
+            <Button asChild variant="outline" className="w-full">
+              <Link href="#paprd-history">View History</Link>
+            </Button>
+          </CardFooter>
+        </Card>
+
+        <Card className="card-hover border-dashed">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Coins className="h-5 w-5" />
+              BNM Tokens
+            </CardTitle>
+            <CardDescription>Access BNM token wallet</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <p className="text-sm text-muted-foreground">
+              Manage BNM tokens with dedicated wallet interface and blockchain functions.
+            </p>
+          </CardContent>
+          <CardFooter>
+            <Button asChild variant="secondary" className="w-full">
+              <Link href="/wallet">Open BNM Wallet</Link>
+            </Button>
+          </CardFooter>
+        </Card>
+      </div>
+
+      {/* Detailed Operations */}
+      {hasWallet ? (
+        <ConnectedWalletInterface 
+          userAddress={userAddress}
+          privateKey={privateKey}
+          balance={balance}
+          onOperation={handleOperation}
+          loading={loading}
+          onDisconnect={() => {
+            localStorage.removeItem('wallet_address')
+            localStorage.removeItem('wallet_private_key')
+            localStorage.removeItem('paprd_wallet_address')
+            localStorage.removeItem('paprd_wallet_private_key')
+            setHasWallet(false)
+            setUserAddress("")
+            setPrivateKey("")
+          }}
+        />
+      ) : (
+        <WalletConnectionInterface 
+          manualAddress={manualAddress}
+          manualKey={manualKey}
+          showPrivateKey={showPrivateKey}
+          loading={loading.connectWallet}
+          onAddressChange={setManualAddress}
+          onKeyChange={setManualKey}
+          onToggleShowKey={() => setShowPrivateKey(!showPrivateKey)}
+          onConnect={handleConnectWallet}
+        />
+      )}
+
+      {/* Token Information */}
+      <div className="mt-12 grid grid-cols-1 md:grid-cols-2 gap-6">
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <DollarSign className="h-5 w-5 text-green-500" />
+              About PAPRD Stablecoin
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-2">
+            <p className="text-sm">• USD-pegged stablecoin (1:1 target)</p>
+            <p className="text-sm">• Total supply: {totalSupply.toLocaleString()} PAPRD</p>
+            <p className="text-sm">• Smart contract controlled with compliance features</p>
+            <p className="text-sm">• {collateralRatio}% collateral backing ratio</p>
+            <p className="text-sm">• Dual collateral support (FIAT + BNM)</p>
           </CardContent>
         </Card>
-        
+
         <Card>
-          <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-medium">Total Supply</CardTitle>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Coins className="h-5 w-5 text-[#d1ff00]" />
+              About BNM Tokens
+            </CardTitle>
           </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{totalSupply.toLocaleString()} PAPRD</div>
+          <CardContent className="space-y-2">
+            <p className="text-sm">• Native token of the Binomena blockchain</p>
+            <p className="text-sm">• Used for all transaction fees</p>
+            <p className="text-sm">• Required for PAPRD smart contract operations</p>
+            <p className="text-sm">• Same wallet holds both BNM and PAPRD</p>
           </CardContent>
         </Card>
+      </div>
+    </div>
+  )
+}
+
+// Component: PAPRD Balance Checker
+function PAPRDBalanceChecker() {
+  const [checkAddress, setCheckAddress] = useState("")
+  const [balance, setBalance] = useState<number | null>(null)
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+
+  const handleCheckBalance = async () => {
+    if (!checkAddress) return
+    
+    setLoading(true)
+    setError(null)
+    setBalance(null)
+
+    try {
+      const result = await getPAPRDBalance(checkAddress)
+      setBalance(result.balance)
+    } catch (err: any) {
+      setError("Invalid address or failed to fetch balance")
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  return (
+    <div className="space-y-4">
+      <h4 className="font-medium">Check PAPRD Balance</h4>
+      <div className="space-y-2">
+        <Label htmlFor="paprdCheckAddress">Binomena Address</Label>
+        <div className="flex gap-2">
+          <Input
+            id="paprdCheckAddress"
+            placeholder="Enter any Binomena address"
+            value={checkAddress}
+            onChange={(e) => setCheckAddress(e.target.value)}
+            className="flex-1"
+          />
+          <Button 
+            onClick={handleCheckBalance} 
+            disabled={loading || !checkAddress}
+            size="sm"
+          >
+            {loading ? "Checking..." : "Check"}
+          </Button>
+        </div>
+      </div>
+
+      {balance !== null && (
+        <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
+          <div className="text-center">
+            <div className="text-2xl font-bold text-green-600">{balance.toLocaleString()} PAPRD</div>
+            <div className="text-sm text-muted-foreground">≈ ${balance.toLocaleString()} USD</div>
+          </div>
+        </div>
+      )}
+
+      {error && (
+        <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
+          <div className="text-sm text-red-600">{error}</div>
+        </div>
+      )}
+
+      <div className="text-xs text-muted-foreground">
+        <p>💡 <strong>Tip:</strong> This same address can also hold BNM tokens.</p>
+        <p>Use BNM Wallet to check BNM balance of the same address.</p>
+      </div>
+    </div>
+  )
+}
+
+// Component: PAPRD Contract Info
+interface PAPRDContractInfoProps {
+  totalSupply: number
+  collateralRatio: number
+  isPaused: boolean
+  owner: string
+}
+
+function PAPRDContractInfo({ totalSupply, collateralRatio, isPaused, owner }: PAPRDContractInfoProps) {
+  return (
+    <div className="space-y-4">
+      <h4 className="font-medium">PAPRD Contract Info</h4>
+      
+      <div className="space-y-3">
+        <div className="flex justify-between items-center p-3 bg-muted rounded-lg">
+          <span className="text-sm">Total Supply</span>
+          <span className="font-medium text-green-600">{totalSupply.toLocaleString()} PAPRD</span>
+        </div>
         
-        <Card>
-          <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-medium">Collateral Ratio</CardTitle>
+        <div className="flex justify-between items-center p-3 bg-muted rounded-lg">
+          <span className="text-sm">Collateral Ratio</span>
+          <span className="font-medium text-blue-600">{collateralRatio}%</span>
+        </div>
+        
+        <div className="flex justify-between items-center p-3 bg-muted rounded-lg">
+          <span className="text-sm">Contract Status</span>
+          <span className={`font-medium ${isPaused ? 'text-red-600' : 'text-green-600'}`}>
+            {isPaused ? 'Paused' : 'Active'}
+          </span>
+        </div>
+        
+        <div className="flex justify-between items-center p-3 bg-muted rounded-lg">
+          <span className="text-sm">Contract ID</span>
+          <span className="font-medium text-xs">AdNe1e77857b790cf352e57a20c704add7ce86db6f7dc5b7d14cbea95cfffe0d</span>
+        </div>
+      </div>
+
+      <div className="text-xs text-muted-foreground space-y-1">
+        <p>• PAPRD operates via smart contract</p>
+        <p>• All operations require BNM for gas fees</p>
+        <p>• 25+ contract functions available</p>
+      </div>
+    </div>
+  )
+}
+
+// Component: Wallet Connection Interface
+interface WalletConnectionInterfaceProps {
+  manualAddress: string
+  manualKey: string
+  showPrivateKey: boolean
+  loading: boolean
+  onAddressChange: (address: string) => void
+  onKeyChange: (key: string) => void
+  onToggleShowKey: () => void
+  onConnect: () => void
+}
+
+function WalletConnectionInterface({
+  manualAddress,
+  manualKey,
+  showPrivateKey,
+  loading,
+  onAddressChange,
+  onKeyChange,
+  onToggleShowKey,
+  onConnect
+}: WalletConnectionInterfaceProps) {
+  return (
+    <div id="connect-wallet" className="space-y-6">
+      <h2 className="text-2xl font-bold text-center">Connect Your Binomena Wallet</h2>
+      
+      <Alert>
+        <AlertCircle className="h-4 w-4" />
+        <AlertTitle>Important: Blockchain Wallet Required</AlertTitle>
+        <AlertDescription>
+          PAPRD tokens exist on the Binomena blockchain. You need a Binomena wallet (not a token-specific wallet) to manage PAPRD tokens.
+          The same wallet that holds BNM tokens can also hold PAPRD tokens.
+        </AlertDescription>
+      </Alert>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <Card className="card-hover">
+          <CardHeader>
+            <Coins className="w-10 h-10 text-primary mb-2" />
+            <CardTitle>Use Existing BNM Wallet</CardTitle>
+            <CardDescription>If you already have a BNM wallet, use it for PAPRD</CardDescription>
           </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{collateralRatio}%</div>
+          <CardContent className="space-y-4">
+            <p className="text-sm text-muted-foreground">
+              Your existing Binomena (BNM) wallet can hold both BNM and PAPRD tokens. No need to create a separate wallet.
+            </p>
+            <Button asChild className="w-full" variant="outline">
+              <Link href="/wallet" className="flex items-center gap-2">
+                Go to BNM Wallet <ExternalLink className="h-4 w-4" />
+              </Link>
+            </Button>
           </CardContent>
         </Card>
-        
-        <Card>
-          <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-medium">Status</CardTitle>
+
+        <Card className="card-hover">
+          <CardHeader>
+            <Wallet className="w-10 h-10 text-primary mb-2" />
+            <CardTitle>Create New Binomena Wallet</CardTitle>
+            <CardDescription>Create a new blockchain wallet for both tokens</CardDescription>
           </CardHeader>
-          <CardContent>
-            <div className={`text-2xl font-bold ${isPaused ? 'text-red-500' : 'text-green-500'}`}>
-              {isPaused ? 'Paused' : 'Active'}
-            </div>
+          <CardContent className="space-y-4">
+            <p className="text-sm text-muted-foreground">
+              Create a new Binomena blockchain wallet that can hold both BNM and PAPRD tokens.
+            </p>
+            <Button asChild className="w-full">
+              <Link href="/wallet/create" className="flex items-center gap-2">
+                Create Binomena Wallet <ExternalLink className="h-4 w-4" />
+              </Link>
+            </Button>
           </CardContent>
         </Card>
       </div>
 
-      {/* Wallet Information */}
-      <Card className="mb-8">
+      {/* Manual Wallet Connection */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Import className="h-5 w-5" />
+            Connect Existing Wallet
+          </CardTitle>
+          <CardDescription>Connect your existing Binomena wallet manually</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="manualAddress">Wallet Address</Label>
+            <Input
+              id="manualAddress"
+              placeholder="Enter your Binomena wallet address"
+              value={manualAddress}
+              onChange={(e) => onAddressChange(e.target.value)}
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="manualKey">Private Key</Label>
+            <div className="relative">
+              <Input
+                id="manualKey"
+                type={showPrivateKey ? "text" : "password"}
+                placeholder="Enter your private key"
+                value={manualKey}
+                onChange={(e) => onKeyChange(e.target.value)}
+              />
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                onClick={onToggleShowKey}
+              >
+                {showPrivateKey ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+              </Button>
+            </div>
+          </div>
+          <Button 
+            onClick={onConnect} 
+            disabled={loading || !manualAddress || !manualKey}
+            className="w-full"
+          >
+            {loading ? "Connecting..." : "Connect Wallet"}
+          </Button>
+        </CardContent>
+      </Card>
+    </div>
+  )
+}
+
+// Component: Connected Wallet Interface
+interface ConnectedWalletInterfaceProps {
+  userAddress: string
+  privateKey: string
+  balance: number
+  onOperation: (operation: string, fn: () => Promise<any>) => void
+  loading: { [key: string]: boolean }
+  onDisconnect: () => void
+}
+
+function ConnectedWalletInterface({
+  userAddress,
+  privateKey,
+  balance,
+  onOperation,
+  loading,
+  onDisconnect
+}: ConnectedWalletInterfaceProps) {
+  return (
+    <div className="space-y-8">
+      {/* Wallet Overview */}
+      <Card>
         <CardHeader>
           <CardTitle>Connected Binomena Wallet</CardTitle>
           <CardDescription>Your blockchain wallet managing PAPRD tokens</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
+          <div className="flex items-center justify-between p-4 bg-muted rounded-lg">
+            <div>
+              <div className="font-medium">Your PAPRD Balance</div>
+              <div className="text-2xl font-bold text-green-600">{balance.toLocaleString()} PAPRD</div>
+              <div className="text-xs text-muted-foreground">≈ ${balance.toLocaleString()} USD</div>
+            </div>
+            <DollarSign className="h-8 w-8 text-green-500" />
+          </div>
           <div className="space-y-2">
             <Label>Wallet Address</Label>
             <div className="font-mono text-xs text-muted-foreground break-all p-2 bg-muted rounded">
@@ -400,15 +703,7 @@ export default function PAPRDWalletPage() {
             <Button variant="outline" asChild>
               <Link href="/wallet">Switch to BNM View</Link>
             </Button>
-            <Button variant="outline" onClick={() => {
-              localStorage.removeItem('wallet_address')
-              localStorage.removeItem('wallet_private_key')
-              localStorage.removeItem('paprd_wallet_address')
-              localStorage.removeItem('paprd_wallet_private_key')
-              setHasWallet(false)
-              setUserAddress("")
-              setPrivateKey("")
-            }}>
+            <Button variant="outline" onClick={onDisconnect}>
               Disconnect Wallet
             </Button>
           </div>
@@ -427,19 +722,19 @@ export default function PAPRDWalletPage() {
         </TabsList>
 
         {/* Send Tab */}
-        <TabsContent value="send" className="space-y-4">
+        <TabsContent value="send" className="space-y-4" id="send-paprd">
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Send className="h-5 w-5" />
                 Send PAPRD
               </CardTitle>
-              <CardDescription>Transfer PAPRD tokens to another address</CardDescription>
+              <CardDescription>Transfer PAPRD tokens to another address using smart contract</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <TransferForm 
                 onTransfer={(to, amount) => 
-                  handleOperation('transfer', () => transferPAPRD(to, amount, privateKey))
+                  onOperation('transfer', () => transferPAPRD(to, amount, privateKey))
                 }
                 loading={loading.transfer}
                 disabled={!privateKey}
@@ -482,20 +777,20 @@ export default function PAPRDWalletPage() {
               </CardContent>
             </Card>
 
-            <Card>
+            <Card id="balance-checker">
               <CardHeader>
                 <CardTitle>Check Any PAPRD Balance</CardTitle>
                 <CardDescription>Check PAPRD balance of any Binomena address</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
-                <BalanceChecker />
+                <PAPRDBalanceChecker />
               </CardContent>
             </Card>
           </div>
         </TabsContent>
 
         {/* Mint/Burn Tab */}
-        <TabsContent value="mint" className="space-y-4">
+        <TabsContent value="mint" className="space-y-4" id="mint-paprd">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <Card>
               <CardHeader>
@@ -508,7 +803,7 @@ export default function PAPRDWalletPage() {
               <CardContent className="space-y-4">
                 <MintForm 
                   onMint={(to, amount) => 
-                    handleOperation('mint', () => mintPAPRD(to, amount, privateKey))
+                    onOperation('mint', () => mintPAPRD(to, amount, privateKey))
                   }
                   loading={loading.mint}
                   disabled={!privateKey}
@@ -524,7 +819,7 @@ export default function PAPRDWalletPage() {
               <CardContent className="space-y-4">
                 <BurnForm 
                   onBurn={(amount) => 
-                    handleOperation('burn', () => burnPAPRD(amount, privateKey))
+                    onOperation('burn', () => burnPAPRD(amount, privateKey))
                   }
                   loading={loading.burn}
                   disabled={!privateKey}
@@ -547,7 +842,7 @@ export default function PAPRDWalletPage() {
                 <CollateralForm 
                   type="add"
                   onSubmit={(amount: number, collateralType?: number) => 
-                    handleOperation('addCollateral', () => addCollateral(amount, collateralType || 0, privateKey))
+                    onOperation('addCollateral', () => addCollateral(amount, collateralType || 0, privateKey))
                   }
                   loading={loading.addCollateral}
                   disabled={!privateKey}
@@ -564,7 +859,7 @@ export default function PAPRDWalletPage() {
                 <CollateralForm 
                   type="remove"
                   onSubmit={(amount: number) => 
-                    handleOperation('removeCollateral', () => removeCollateral(amount, privateKey))
+                    onOperation('removeCollateral', () => removeCollateral(amount, privateKey))
                   }
                   loading={loading.removeCollateral}
                   disabled={!privateKey}
@@ -577,31 +872,29 @@ export default function PAPRDWalletPage() {
         {/* Admin Tab */}
         <TabsContent value="admin" className="space-y-4">
           <AdminPanel 
-            onOperation={handleOperation}
+            onOperation={onOperation}
             loading={loading}
             privateKey={privateKey}
-            currentRatio={collateralRatio}
-            isPaused={isPaused}
             userAddress={userAddress}
           />
         </TabsContent>
 
         {/* History Tab */}
-        <TabsContent value="history" className="space-y-4">
+        <TabsContent value="history" className="space-y-4" id="paprd-history">
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <History className="h-5 w-5" />
-                Transaction History
+                PAPRD Transaction History
               </CardTitle>
-              <CardDescription>Your PAPRD transaction history</CardDescription>
+              <CardDescription>Your PAPRD smart contract transaction history</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="text-center py-8">
                 <History className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
                 <p className="text-muted-foreground">Transaction history coming soon</p>
                 <p className="text-sm text-muted-foreground mt-2">
-                  View all your PAPRD transfers, mints, and burns
+                  View all your PAPRD transfers, mints, burns, and smart contract interactions
                 </p>
               </div>
             </CardContent>
@@ -612,7 +905,7 @@ export default function PAPRDWalletPage() {
   )
 }
 
-// Component Forms (same as before but optimized for wallet UI)
+// All the form components remain the same as before...
 interface TransferFormProps {
   onTransfer: (to: string, amount: number) => void
   loading: boolean
@@ -817,82 +1110,12 @@ interface AdminPanelProps {
   onOperation: (operation: string, fn: () => Promise<any>) => void
   loading: { [key: string]: boolean }
   privateKey: string
-  currentRatio: number
-  isPaused: boolean
   userAddress: string
 }
 
-function BalanceChecker() {
-  const [checkAddress, setCheckAddress] = useState("")
-  const [balance, setBalance] = useState<number | null>(null)
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
-
-  const handleCheckBalance = async () => {
-    if (!checkAddress) return
-    
-    setLoading(true)
-    setError(null)
-    setBalance(null)
-
-    try {
-      const result = await getPAPRDBalance(checkAddress)
-      setBalance(result.balance)
-    } catch (err: any) {
-      setError("Invalid address or failed to fetch balance")
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  return (
-    <div className="space-y-4">
-      <div className="space-y-2">
-        <Label htmlFor="checkAddress">Binomena Address</Label>
-        <div className="flex gap-2">
-          <Input
-            id="checkAddress"
-            placeholder="Enter any Binomena address"
-            value={checkAddress}
-            onChange={(e) => setCheckAddress(e.target.value)}
-            className="flex-1"
-          />
-          <Button 
-            onClick={handleCheckBalance} 
-            disabled={loading || !checkAddress}
-            size="sm"
-          >
-            {loading ? "Checking..." : "Check"}
-          </Button>
-        </div>
-      </div>
-
-      {balance !== null && (
-        <div className="p-4 bg-muted rounded-lg">
-          <div className="text-center">
-            <div className="text-2xl font-bold text-green-600">{balance.toLocaleString()} PAPRD</div>
-            <div className="text-sm text-muted-foreground">≈ ${balance.toLocaleString()} USD</div>
-          </div>
-        </div>
-      )}
-
-      {error && (
-        <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
-          <div className="text-sm text-red-600">{error}</div>
-        </div>
-      )}
-
-      <div className="text-xs text-muted-foreground">
-        <p>💡 <strong>Tip:</strong> Any Binomena address can hold both BNM and PAPRD tokens.</p>
-        <p>Use BNM Wallet to check BNM balances of the same address.</p>
-      </div>
-    </div>
-  )
-}
-
-function AdminPanel({ onOperation, loading, privateKey, currentRatio, isPaused, userAddress }: AdminPanelProps) {
+function AdminPanel({ onOperation, loading, privateKey, userAddress }: AdminPanelProps) {
   const [targetAddress, setTargetAddress] = useState("")
-  const [newRatio, setNewRatio] = useState(currentRatio.toString())
+  const [newRatio, setNewRatio] = useState("150")
   const [newOwner, setNewOwner] = useState("")
   const [checkAddress, setCheckAddress] = useState(userAddress)
   const [results, setResults] = useState<any>({})
@@ -925,7 +1148,7 @@ function AdminPanel({ onOperation, loading, privateKey, currentRatio, isPaused, 
       <Card>
         <CardHeader>
           <CardTitle>Address Verification</CardTitle>
-          <CardDescription>Check address status and permissions</CardDescription>
+          <CardDescription>Check address status and permissions using smart contract</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="flex gap-2">
@@ -1065,19 +1288,19 @@ function AdminPanel({ onOperation, loading, privateKey, currentRatio, isPaused, 
             <div className="flex gap-2">
               <Button 
                 onClick={() => onOperation('pause', () => pauseContract(privateKey))}
-                disabled={loading.pause || !privateKey || isPaused}
+                disabled={loading.pause || !privateKey}
                 variant="destructive"
                 className="flex-1"
               >
-                {loading.pause ? "Pausing..." : "Pause"}
+                {loading.pause ? "Pausing..." : "Pause Contract"}
               </Button>
               <Button 
                 onClick={() => onOperation('unpause', () => unpauseContract(privateKey))}
-                disabled={loading.unpause || !privateKey || !isPaused}
+                disabled={loading.unpause || !privateKey}
                 variant="outline"
                 className="flex-1"
               >
-                {loading.unpause ? "Unpausing..." : "Unpause"}
+                {loading.unpause ? "Unpausing..." : "Unpause Contract"}
               </Button>
             </div>
           </CardContent>
