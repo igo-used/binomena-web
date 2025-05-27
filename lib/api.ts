@@ -359,12 +359,28 @@ export async function getPAPRDTotalSupply(): Promise<{ totalSupply: number }> {
   }
 }
 
-// Get PAPRD balance
+// Get PAPRD balance (using direct API endpoint)
 export async function getPAPRDBalance(address: string): Promise<{ balance: number }> {
+  try {
+    const response = await fetch(`${API_BASE_URL}/paprd/balance/${address}`)
+
+    if (!response.ok) {
+      throw new Error(`Failed to get PAPRD balance: ${response.statusText}`)
+    }
+
+    return await response.json()
+  } catch (error) {
+    console.error("Error getting PAPRD balance:", error)
+    throw error
+  }
+}
+
+// Get PAPRD balance (using smart contract call - alternative method)
+export async function getPAPRDBalanceContract(address: string): Promise<{ balance: number }> {
   try {
     return await callContractFunction(PAPRD_CONTRACT_ID, "get_balance", [address])
   } catch (error) {
-    console.error("Error getting PAPRD balance:", error)
+    console.error("Error getting PAPRD balance via contract:", error)
     throw error
   }
 }
