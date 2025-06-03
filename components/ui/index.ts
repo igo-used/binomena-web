@@ -9,4 +9,5 @@ export { Progress } from "./progress"
 export { Badge } from "./badge"
 export { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from "./table"
 export { Textarea } from "./textarea"
-export { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "./dropdown-menu" 
+export { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "./dropdown-menu"
+export { TokenLogo } from './token-logo' 

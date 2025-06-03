@@ -43,3 +43,6 @@ next-env.d.ts
 # Sensitive presale management files (keep local only)
 ORDER_MANAGEMENT_SYSTEM.md
 google-sheets-template.csv
+
+# Token branding documentation (keep local only)
+TOKEN_BRANDING_GUIDE.md

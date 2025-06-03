@@ -9,13 +9,19 @@ import { Label } from "@/components/ui/label"
 import { Coins, DollarSign, ArrowRight, Calculator } from "lucide-react"
 import { useState } from "react"
 import { getWalletBalance } from "@/lib/api"
+import { TokenLogo } from "@/components/ui/token-logo"
 
 export default function WalletPage() {
   return (
     <div className="container py-10">
       <div className="flex flex-col items-center justify-center space-y-4 text-center mb-10">
-        <Coins className="h-16 w-16 text-primary" />
-        <h1 className="text-3xl font-bold tracking-tighter sm:text-4xl">BNM Wallet</h1>
+        <div className="flex items-center gap-4 mb-4">
+          <TokenLogo symbol="BNM" size="xl" />
+          <div className="text-left">
+            <h1 className="text-3xl font-bold tracking-tighter sm:text-4xl">BNM Wallet</h1>
+            <p className="text-muted-foreground">Binomena Native Token</p>
+          </div>
+        </div>
         <p className="max-w-[700px] text-muted-foreground md:text-xl/relaxed">
           Manage your Binomena (BNM) tokens and interact with the blockchain
         </p>
@@ -39,17 +45,14 @@ export default function WalletPage() {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Calculator className="h-5 w-5" />
-            Quick BNM Balance Checker
+            Quick Balance Checker
           </CardTitle>
           <CardDescription>
-            Check BNM balance and transaction fees for any Binomena address
+            Check BNM token balance for any Binomena address
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <BNMBalanceChecker />
-            <TransactionFeeInfo />
-          </div>
+          <BNMBalanceChecker />
         </CardContent>
       </Card>
 
@@ -262,10 +265,13 @@ function BNMBalanceChecker() {
       </div>
 
       {balance !== null && (
-        <div className="p-4 bg-[#d1ff00]/10 border border-[#d1ff00]/20 rounded-lg">
-          <div className="text-center">
-            <div className="text-2xl font-bold text-[#d1ff00]">{balance.toLocaleString()} BNM</div>
-            <div className="text-sm text-muted-foreground">Native Binomena tokens</div>
+        <div className="p-6 bg-gradient-to-r from-blue-50 to-purple-50 border border-blue-200 rounded-lg">
+          <div className="flex items-center justify-center gap-4">
+            <TokenLogo symbol="BNM" size="lg" />
+            <div className="text-center">
+              <div className="text-3xl font-bold text-blue-600">{balance.toLocaleString()} BNM</div>
+              <div className="text-sm text-muted-foreground">Binomena Native Tokens</div>
+            </div>
           </div>
         </div>
       )}

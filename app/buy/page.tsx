@@ -15,6 +15,7 @@ import { Badge } from "@/components/ui/badge"
 import { AlertCircle, CreditCard, Wallet, CheckCircle2, Timer, TrendingUp, Users, Mail, ExternalLink, Copy } from "lucide-react"
 import Link from "next/link"
 import { PresaleAPI, type PaymentDetails } from "@/lib/presale-api"
+import { TokenLogo } from "@/components/ui/token-logo"
 
 export default function BuyTokensPage() {
   const [amount, setAmount] = useState("")
@@ -290,13 +291,19 @@ Thank you!`
   return (
     <div className="container py-10">
       <div className="flex flex-col items-center justify-center space-y-4 text-center mb-10">
+        <div className="flex items-center gap-4 mb-4">
+          <TokenLogo symbol="BNM" size="xl" />
+          <div className="text-left">
+            <h1 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">BNM Token Presale</h1>
+            <p className="text-muted-foreground">Binomena Native Token</p>
+          </div>
+        </div>
         <div className="flex items-center gap-2 mb-2">
           <Badge variant="secondary" className="bg-green-100 text-green-800">
             <TrendingUp className="h-3 w-3 mr-1" />
             Presale Live
           </Badge>
         </div>
-        <h1 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">BNM Token Presale</h1>
         <p className="max-w-[700px] text-muted-foreground md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
           Secure your BNM tokens at the best presale price before public launch
         </p>

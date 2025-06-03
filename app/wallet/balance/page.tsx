@@ -10,6 +10,7 @@ import { Label } from "@/components/ui/label"
 import { AlertCircle, Search, ArrowRight } from "lucide-react"
 import { getWalletBalance } from "@/lib/api"
 import Link from "next/link"
+import { TokenLogo } from "@/components/ui/token-logo"
 
 export default function BalancePage() {
   const searchParams = useSearchParams()
@@ -54,8 +55,13 @@ export default function BalancePage() {
   return (
     <div className="container py-10">
       <div className="flex flex-col items-center justify-center space-y-4 text-center mb-10">
-        <h1 className="text-3xl font-bold tracking-tighter sm:text-4xl">Check Wallet Balance</h1>
-        <p className="max-w-[700px] text-muted-foreground">View your Binomena wallet balance</p>
+        <div className="flex items-center gap-4 mb-4">
+          <TokenLogo symbol="BNM" size="xl" />
+          <div className="text-left">
+            <h1 className="text-3xl font-bold tracking-tighter sm:text-4xl">Check Wallet Balance</h1>
+            <p className="text-muted-foreground">View your Binomena wallet balance</p>
+          </div>
+        </div>
       </div>
 
       <div className="max-w-md mx-auto">
@@ -90,10 +96,13 @@ export default function BalancePage() {
             </div>
 
             {balance !== null && (
-              <div className="mt-6 p-4 bg-muted rounded-lg">
-                <div className="text-center">
-                  <p className="text-sm text-muted-foreground mb-1">Balance</p>
-                  <p className="text-3xl font-bold">{formatBalance(balance)} BNM</p>
+              <div className="mt-6 p-6 bg-gradient-to-r from-blue-50 to-purple-50 border border-blue-200 rounded-lg">
+                <div className="flex items-center justify-center gap-4">
+                  <TokenLogo symbol="BNM" size="lg" />
+                  <div className="text-center">
+                    <div className="text-3xl font-bold text-blue-600">{formatBalance(balance)} BNM</div>
+                    <div className="text-sm text-muted-foreground">Binomena Native Tokens</div>
+                  </div>
                 </div>
               </div>
             )}
